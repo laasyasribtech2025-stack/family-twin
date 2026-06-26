@@ -41,7 +41,7 @@
         </button>
         <button class="nav-btn" data-view="legacy">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
-          <span>Living Legacy</span>
+          <span>Memorys</span>
         </button>
         <button class="nav-btn" data-view="privacy">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -268,8 +268,8 @@
           <div id="view-legacy" class="app-view">
             <div class="legacy-container">
               <div class="legacy-header">
-                <h3>Living Legacy Archive</h3>
-                <p>Preserving verified stories, memories, and voice logs. Strictly zero AI-hallucinated data.</p>
+                <h3>Memorys Archive</h3>
+                <p>Preserving verified stories, memories, photos, videos, and voice logs. Enforcing strict role-based privacy filters.</p>
               </div>
 
               <div class="legacy-timeline" id="legacy-timeline-container">
@@ -278,7 +278,7 @@
 
               <!-- Upload form for adding verified memory -->
               <div class="add-vault-item-panel" style="margin-top: 2.5rem;">
-                <h4>Record New Verified Legacy Memory</h4>
+                <h4>Record New Verified Memory</h4>
                 <div class="form-row">
                   <input type="text" id="new-legacy-title" placeholder="Memory Title (e.g., Grandma's Childhood, Baking Lemon Tart)">
                   <select id="new-legacy-member">
@@ -290,6 +290,15 @@
                 </div>
                 <div class="form-row">
                   <input type="text" id="new-legacy-file" placeholder="Voice Clip File Name (e.g. grandma_meringue_recipe.wav)">
+                  <select id="new-legacy-privacy">
+                    <option value="Family">Privacy: Shared with Family</option>
+                    <option value="Restricted">Privacy: Restricted (Parents only)</option>
+                    <option value="Private">Privacy: Private (Self only)</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <input type="text" id="new-legacy-photo" placeholder="Mock Photo Image URL (e.g., photo_tart.jpg)">
+                  <input type="text" id="new-legacy-video" placeholder="Mock Video File Name (e.g., video_birthday.mp4)">
                 </div>
                 <div class="form-row">
                   <textarea id="new-legacy-story" placeholder="Type the transcription or verified text story here..." rows="3"></textarea>

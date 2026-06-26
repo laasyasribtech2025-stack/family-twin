@@ -182,7 +182,11 @@ const McpSimulator = {
         mediaUrl: "grandpa_snowstorm_1974.wav",
         verificationHash: "sha256-8a9d1fc5e6b772c91834ee8a58a74d2b",
         verifiable: true,
-        confidenceScore: 1.00
+        confidenceScore: 1.00,
+        owner: "dad",
+        privacyLevel: "Family",
+        photo: "https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?w=600&auto=format&fit=crop",
+        video: ""
       },
       {
         id: "legacy-story-02",
@@ -194,7 +198,43 @@ const McpSimulator = {
         mediaUrl: "grandpa_compound_interest.wav",
         verificationHash: "sha256-42ee9bcf9143a18a994775d04581f109",
         verifiable: true,
-        confidenceScore: 1.00
+        confidenceScore: 1.00,
+        owner: "dad",
+        privacyLevel: "Family",
+        photo: "",
+        video: ""
+      },
+      {
+        id: "legacy-story-03",
+        subject: "Grandma Elena",
+        title: "Grandma's Wedding Secret",
+        story: "On the night of our wedding in 1968, Robert lost the rings. We spent 2 hours looking for them in the bushes behind the chapel. We ended up using two blades of woven grass as rings. It was the most romantic mistake of my life.",
+        recordedDate: "2024-02-14",
+        mediaType: "Audio Voice Clip",
+        mediaUrl: "grandma_wedding_rings.wav",
+        verificationHash: "sha256-42bbde9c8d11629faee155d045c2f90a",
+        verifiable: true,
+        confidenceScore: 1.00,
+        owner: "grandma",
+        privacyLevel: "Private",
+        photo: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=600&auto=format&fit=crop",
+        video: ""
+      },
+      {
+        id: "legacy-story-04",
+        subject: "Dad Arthur",
+        title: "Dad's First Car Adventure",
+        story: "I bought a broken down 1985 Ford truck for two hundred dollars. Robert and I spent three months rebuilding the transmission. When we finally got it running, the exhaust pipe fell off on my first drive to school. The noise was deafening, but it was the proudest day of my teens.",
+        recordedDate: "2025-05-10",
+        mediaType: "Audio Voice Clip",
+        mediaUrl: "dad_first_truck.wav",
+        verificationHash: "sha256-55aa88fc9143a18a994775d04581f109",
+        verifiable: true,
+        confidenceScore: 1.00,
+        owner: "dad",
+        privacyLevel: "Restricted",
+        photo: "",
+        video: "video_truck.mp4"
       }
     ],
 

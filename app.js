@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderVaultList();
         break;
       case 'legacy':
-        headerTitle.innerText = "Living Legacy Archive";
-        headerSubtitle.innerText = "Verified historical records. Zero generated hallucinations.";
+        headerTitle.innerText = "Memorys Archive";
+        headerSubtitle.innerText = "Verified historical records, photos, and videos. Enforced by Privacy Agent.";
         LegacyModule.renderTimeline();
         break;
       case 'privacy':
@@ -339,12 +339,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = document.getElementById('new-legacy-title').value.trim();
     const subject = document.getElementById('new-legacy-member').value;
     const voiceFile = document.getElementById('new-legacy-file').value.trim() || 'unnamed_clip.wav';
+    const privacy = document.getElementById('new-legacy-privacy').value;
+    const photo = document.getElementById('new-legacy-photo').value.trim();
+    const video = document.getElementById('new-legacy-video').value.trim();
     const storyText = document.getElementById('new-legacy-story').value.trim();
 
     if (!title || !storyText) {
       alert("Please fill in a title and transcription story text.");
       return;
     }
+
+    const ownerMap = {
+      "Grandpa Robert": "dad",
+      "Grandma Elena": "grandma",
+      "Dad Arthur": "dad",
+      "Mom Sarah": "mom"
+    };
 
     const newMemory = {
       id: `legacy-story-${Date.now()}`,
@@ -356,7 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
       mediaUrl: voiceFile,
       verificationHash: `sha256-${Math.random().toString(16).substring(2, 18)}${Math.random().toString(16).substring(2, 18)}`,
       verifiable: true,
-      confidenceScore: 1.00
+      confidenceScore: 1.00,
+      owner: ownerMap[subject] || 'dad',
+      privacyLevel: privacy,
+      photo: photo,
+      video: video
     };
 
     appendTelemetryLog({
@@ -371,6 +385,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear inputs
     document.getElementById('new-legacy-title').value = '';
     document.getElementById('new-legacy-file').value = '';
+    document.getElementById('new-legacy-photo').value = '';
+    document.getElementById('new-legacy-video').value = '';
     document.getElementById('new-legacy-story').value = '';
 
     appendTelemetryLog({
