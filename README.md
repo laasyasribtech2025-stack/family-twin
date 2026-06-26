@@ -352,7 +352,7 @@ Family-Concierge-AI
      📂 Documents
      🏥 Medical
      📆 Calendar
-     📷 Memories
+     📷 Memorie
      🗄 Database
 
                  ▼
