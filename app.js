@@ -968,15 +968,23 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAmbient.addEventListener('click', toggleAmbientMusic);
   }
 
-  // Attempt to autoplay on first user interaction anywhere on the body to bypass browser restrictions
+  // Try to play immediately on page load (in case browser allows it)
+  if (bgMusic) {
+    bgMusic.play().then(() => {
+      appendTelemetryLog({
+        timestamp: new Date().toISOString().substring(11, 19),
+        type: 'success-log',
+        message: 'Ambient background music started automatically.'
+      });
+    }).catch(e => {
+      console.log("Autoplay on load blocked. Awaiting user interaction.");
+    });
+  }
+
+  // Attempt to play on first user interaction anywhere on the body if it is still paused and user hasn't turned it off
   document.body.addEventListener('click', () => {
-    if (bgMusic && bgMusic.paused && btnAmbient && !btnAmbient.classList.contains('playing')) {
+    if (bgMusic && bgMusic.paused && btnAmbient && btnAmbient.classList.contains('playing')) {
       bgMusic.play().then(() => {
-        btnAmbient.classList.add('playing');
-        const musicIcon = btnAmbient.querySelector('.music-icon');
-        const musicText = btnAmbient.querySelector('span:not(.music-icon)');
-        if (musicIcon) musicIcon.innerText = '🔊';
-        if (musicText) musicText.innerText = 'Ambience: On';
         appendTelemetryLog({
           timestamp: new Date().toISOString().substring(11, 19),
           type: 'success-log',
