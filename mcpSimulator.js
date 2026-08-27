@@ -33,23 +33,89 @@ const McpSimulator = {
   storage: {
     db: [
       {
-        id: "doc-01",
-        title: "House Insurance Papers",
+        id: "doc-passport-dad",
+        title: "Arthur's US Passport",
         category: "document",
         owner: "dad",
-        location: "Cupboard 2 (Blue Folder)",
-        value: "Policy BC-9481-2294A. Provider: BlueCross Family Shield Gold. Direct phone: 1-800-555-0199. Coverage: $1.2M property & flood.",
+        location: "Master Bedroom Safe (Drawer A)",
+        value: "Passport No: USA-982148192. Issued: Oct 15, 2016. Expiration: Oct 14, 2026 (⚠️ Expires in 48 days!). Status: Renewal Required for Travel.",
         privacyLevel: "Restricted",
         fileUrl: null,
         fileType: null
       },
       {
-        id: "doc-02",
-        title: "House Deed / Title",
+        id: "doc-passport-mom",
+        title: "Sarah's US Passport",
+        category: "document",
+        owner: "mom",
+        location: "Master Bedroom Safe (Drawer A)",
+        value: "Passport No: USA-441928371. Issued: July 23, 2018. Expiration: July 22, 2028. Status: Active & Valid.",
+        privacyLevel: "Restricted",
+        fileUrl: null,
+        fileType: null
+      },
+      {
+        id: "doc-passport-son",
+        title: "Leo's US Passport",
+        category: "document",
+        owner: "son",
+        location: "Master Bedroom Safe (Drawer A)",
+        value: "Passport No: USA-882719203. Issued: March 11, 2022. Expiration: March 10, 2027. Status: Active & Valid.",
+        privacyLevel: "Family",
+        fileUrl: null,
+        fileType: null
+      },
+      {
+        id: "doc-passport-daughter",
+        title: "Chloe's US Passport",
+        category: "document",
+        owner: "daughter",
+        location: "Master Bedroom Safe (Drawer A)",
+        value: "Passport No: USA-662910482. Issued: Nov 06, 2021. Expiration: Nov 05, 2026 (⚠️ Expires in 70 days). Status: Schedule Renewal.",
+        privacyLevel: "Family",
+        fileUrl: null,
+        fileType: null
+      },
+      {
+        id: "doc-license-dad",
+        title: "Arthur's Real ID Driver's License",
+        category: "document",
+        owner: "dad",
+        location: "Arthur's Wallet / Digital Twin Backup",
+        value: "DL No: D-48192048 (California Real ID). Class C. Expiration: Jan 15, 2027. Organ Donor: Yes.",
+        privacyLevel: "Restricted",
+        fileUrl: null,
+        fileType: null
+      },
+      {
+        id: "doc-01",
+        title: "House Insurance Papers",
         category: "document",
         owner: "dad",
         location: "Cupboard 2 (Blue Folder)",
-        value: "Official property register under Arthur & Sarah Pendelton. Cert ID: 93821-PR.",
+        value: "Policy BC-9481-2294A. Provider: BlueCross Family Shield Gold. Renewal Date: Nov 12, 2026. Phone: 1-800-555-0199. Coverage: $1.2M property & flood.",
+        privacyLevel: "Restricted",
+        fileUrl: null,
+        fileType: null
+      },
+      {
+        id: "doc-auto-ins",
+        title: "Auto Insurance Policy (Geico)",
+        category: "document",
+        owner: "dad",
+        location: "Glove Compartment / Digital Twin",
+        value: "Policy No: GE-3392-1088. Vehicles: 2024 Tesla Model Y & Honda Odyssey. Annual Renewal: Dec 01, 2026. Roadside Assist: Active (1-800-841-3000).",
+        privacyLevel: "Family",
+        fileUrl: null,
+        fileType: null
+      },
+      {
+        id: "doc-02",
+        title: "House Deed & Title Register",
+        category: "document",
+        owner: "dad",
+        location: "Cupboard 2 (Blue Folder)",
+        value: "Official property deed under Arthur & Sarah Pendelton Family Trust. Cert ID: 93821-PR. County Clerk Registered.",
         privacyLevel: "Private",
         fileUrl: null,
         fileType: null
@@ -71,7 +137,7 @@ const McpSimulator = {
         category: "credentials",
         owner: "daughter",
         location: "Living Room Router Sticker",
-        value: "SSID: TwinHome_5G / Key: ChloeWifiNetAdmin55 (WPA3-PSK)",
+        value: "SSID: TwinHome_5G / Key: ChloeWifiNetAdmin55 (WPA3-PSK Security)",
         privacyLevel: "Family",
         fileUrl: null,
         fileType: null
@@ -82,7 +148,7 @@ const McpSimulator = {
         category: "health",
         owner: "mom",
         location: "Kitchen Fridge / Medical Folder",
-        value: "Severe Allergy: Penicillin, Peanuts. Moderate: Aspirin sensitivity. Blood Type: O Positive (O+).",
+        value: "Severe Allergy: Penicillin, Peanuts (Anaphylaxis risk). Moderate: Aspirin sensitivity. Blood Type: O Positive (O+).",
         privacyLevel: "Emergency",
         fileUrl: null,
         fileType: null
@@ -93,7 +159,7 @@ const McpSimulator = {
         category: "health",
         owner: "mom",
         location: "Elena's Medicine Cabinet",
-        value: "Pharmacy ID: Rx-99482. CVS Pharmacy 4th Ave. Prescriptions: Metformin 500mg, Lisinopril 10mg.",
+        value: "Pharmacy ID: Rx-99482. CVS Pharmacy 4th Ave. Prescriptions: Metformin 500mg (Refill in 6 days), Lisinopril 10mg.",
         privacyLevel: "Emergency",
         fileUrl: null,
         fileType: null

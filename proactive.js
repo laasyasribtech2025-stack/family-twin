@@ -3,13 +3,55 @@
  */
 
 const ProactiveModule = {
-  activeAlerts: [],
+  activeAlerts: [
+    {
+      id: "alert-passport-dad",
+      title: "🚨 Urgent: Arthur's Passport Expiration in 48 Days",
+      description: "Arthur's US Passport (#USA-982148192) expires on Oct 14, 2026. Most international airlines enforce the 6-month validity rule. Immediate renewal recommended.",
+      category: "Passports & Travel",
+      type: "critical",
+      actionText: "Draft Renewal Appt"
+    },
+    {
+      id: "alert-passport-chloe",
+      title: "⚠️ Warning: Chloe's Passport Expiration in 70 Days",
+      description: "Chloe's US Passport (#USA-662910482) expires on Nov 05, 2026. Schedule renewal before the upcoming holiday travel window.",
+      category: "Passports & Travel",
+      type: "warning",
+      actionText: "Schedule Renewal"
+    },
+    {
+      id: "alert-insurance-renewal",
+      title: "📋 House & Flood Policy Renewal Due",
+      description: "BlueCross Family Shield Gold (#BC-9481-2294A) annual renewal due on Nov 12, 2026. Policy covers $1.2M property & flood protection.",
+      category: "Insurance",
+      type: "info",
+      actionText: "Review Policy Terms"
+    },
+    {
+      id: "alert-elena-meds",
+      title: "💊 Prescription Refill: Grandma Elena",
+      description: "Metformin 500mg supply is at 6 days remaining. Automated refill request ready for CVS Pharmacy on 4th Ave.",
+      category: "Health & Pharmacy",
+      type: "critical",
+      actionText: "Send CVS Refill Request"
+    },
+    {
+      id: "alert-auto-fleet",
+      title: "🚗 Fleet Insurance & Tesla Maintenance",
+      description: "Geico Policy #GE-3392-1088 annual premium due Dec 01, 2026. 2024 Tesla Model Y tire rotation and cabin air filter due at 25,000 miles.",
+      category: "Vehicles & Auto",
+      type: "info",
+      actionText: "Schedule Service"
+    }
+  ],
 
   // Telemetry log callback hook
   logCallback: null,
 
   init(logCallback) {
     this.logCallback = logCallback;
+    this.renderAlerts(this.activeAlerts);
   },
 
   log(message, detail = null) {
@@ -24,7 +66,7 @@ const ProactiveModule = {
     }
   },
 
-  renderAlerts(alertsList) {
+  renderAlerts(alertsList = this.activeAlerts) {
     this.activeAlerts = alertsList;
     const feed = document.getElementById('proactive-alerts-feed');
     if (!feed) return;

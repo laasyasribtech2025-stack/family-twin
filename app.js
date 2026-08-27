@@ -75,10 +75,10 @@ function initHeroLanding() {
     });
   }
 
-  // --- Typewriter Text Animation ---
-  const typewriterText = "Glad you stopped in. Good taste tends to find us. Now, what are we building?";
-  const typeSpeed = 38; // ms per char
-  const startDelay = 600; // ms
+  // --- Typewriter Text Animation from README ---
+  const typewriterText = "One Family. One Memory. One Intelligent Living Digital Twin. Preserving verified memories, securing sensitive documents, and proactively safeguarding what matters most.";
+  const typeSpeed = 28; // ms per char for smooth reading
+  const startDelay = 500; // ms
 
   if (typewriterOutput) {
     typewriterOutput.textContent = "";
@@ -105,7 +105,7 @@ function initHeroLanding() {
   if (copyBtn) {
     copyBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const email = "hello@mainframe.co";
+      const email = "support@familytwin.io";
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(email);
       }
@@ -133,8 +133,8 @@ function initHeroLanding() {
     });
   }
 
-  // --- Vault Navigation Transitions ---
-  function enterVault() {
+  // --- Vault Navigation Transitions with View Routing ---
+  function enterVault(targetView = 'dashboard') {
     if (heroPage && appContainer) {
       heroPage.classList.add('hidden');
       appContainer.classList.remove('hidden');
@@ -144,6 +144,11 @@ function initHeroLanding() {
 
       // Start ambient music automatically on user entry
       if (window.startAmbientMusic) window.startAmbientMusic();
+
+      // Switch to targeted view if provided
+      if (typeof switchView === 'function' && targetView) {
+        switchView(targetView);
+      }
     }
   }
 
@@ -156,19 +161,29 @@ function initHeroLanding() {
   }
 
   // Action Pills & Buttons that transition to Vault / Dashboard
-  document.getElementById('btn-capsule-enter')?.addEventListener('click', enterVault);
-  document.getElementById('btn-mobile-get-started')?.addEventListener('click', enterVault);
-  document.getElementById('btn-enter-vault-action')?.addEventListener('click', enterVault);
-  document.getElementById('btn-hero-enter-vault-link')?.addEventListener('click', enterVault);
-  document.getElementById('btn-mainframe-touch')?.addEventListener('click', enterVault);
+  document.getElementById('btn-capsule-enter')?.addEventListener('click', () => enterVault('dashboard'));
+  document.getElementById('btn-mobile-get-started')?.addEventListener('click', () => enterVault('dashboard'));
+  document.getElementById('btn-enter-vault-action')?.addEventListener('click', () => enterVault('privacy'));
+  document.getElementById('btn-hero-enter-vault-link')?.addEventListener('click', () => enterVault('dashboard'));
+  document.getElementById('btn-mainframe-touch')?.addEventListener('click', () => enterVault('chat'));
 
   document.querySelectorAll('.pill-btn-white').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.getAttribute('data-action');
-      if (action === 'operate') {
-        enterVault();
+      if (action === 'knowledge') {
+        enterVault('vault');
+      } else if (action === 'legacy') {
+        enterVault('legacy');
+      } else if (action === 'emergency') {
+        enterVault('dashboard');
+        const overlay = document.getElementById('emergency-overlay');
+        if (overlay) overlay.classList.add('active');
+      } else if (action === 'agents') {
+        enterVault('chat');
+      } else if (action === 'operate') {
+        enterVault('privacy');
       } else {
-        enterVault();
+        enterVault('dashboard');
       }
     });
   });

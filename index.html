@@ -39,16 +39,16 @@
     <header class="mainframe-navbar">
       <!-- Logo (left) -->
       <div class="mainframe-logo" id="mainframe-logo-brand">
-        <span class="logo-name">Mainframe&reg;</span>
+        <span class="logo-name">Family Vault&reg;</span>
         <span class="logo-asterisk">&#10035;</span>
       </div>
 
       <!-- Desktop Nav Links (center, hidden below md) -->
       <nav class="mainframe-nav-links">
-        <a href="#labs" class="nav-item">Labs</a><span class="nav-sep">, </span>
-        <a href="#studio" class="nav-item">Studio</a><span class="nav-sep">, </span>
-        <a href="#openings" class="nav-item">Openings</a><span class="nav-sep">, </span>
-        <a href="#shop" class="nav-item">Shop</a>
+        <a href="#knowledge" class="nav-item">Knowledge Vault</a><span class="nav-sep">, </span>
+        <a href="#legacy" class="nav-item">Living Legacy</a><span class="nav-sep">, </span>
+        <a href="#emergency" class="nav-item">Emergency AI</a><span class="nav-sep">, </span>
+        <a href="#agents" class="nav-item">7 Agents</a>
       </nav>
 
       <!-- Desktop CTA & Ambience (right, hidden below md) -->
@@ -57,7 +57,7 @@
           <span class="music-icon">🔊</span>
           <span class="ambience-text">Ambience: On</span>
         </button>
-        <a href="#contact" class="mainframe-cta-link" id="btn-mainframe-touch">Get in touch</a>
+        <a href="#contact" class="mainframe-cta-link" id="btn-mainframe-touch">Concierge AI</a>
         <button id="btn-capsule-enter" class="mainframe-enter-vault-btn" title="Enter the Living Digital Twin Vault">
           <span>Enter Vault &rarr;</span>
         </button>
@@ -74,11 +74,11 @@
     <!-- Mobile Menu Overlay (fixed, z-index: 9) -->
     <div id="mainframe-mobile-overlay" class="mainframe-mobile-overlay hidden">
       <div class="mobile-links-wrap">
-        <a href="#labs" class="mobile-item">Labs</a>
-        <a href="#studio" class="mobile-item">Studio</a>
-        <a href="#openings" class="mobile-item">Openings</a>
-        <a href="#shop" class="mobile-item">Shop</a>
-        <a href="#contact" class="mobile-item underline">Get in touch</a>
+        <a href="#knowledge" class="mobile-item">Knowledge Vault</a>
+        <a href="#legacy" class="mobile-item">Living Legacy</a>
+        <a href="#emergency" class="mobile-item">Emergency AI</a>
+        <a href="#agents" class="mobile-item">7 Multi-Agents</a>
+        <a href="#contact" class="mobile-item underline">Concierge AI</a>
         <button id="btn-mobile-get-started" class="mobile-vault-btn">Enter Family Vault &rarr;</button>
       </div>
     </div>
@@ -86,25 +86,32 @@
     <!-- Hero Content Container (z-index: 1) -->
     <div class="mainframe-content-container">
       
-      <!-- 1. Blurred Intro Label -->
-      <div class="blurred-intro-label">
-        Hey there, meet A.R.I.A,<br>
-        Mainframe's Adaptive Response Interface Agent
+      <!-- 1. Big Title: FAMILY VAULT -->
+      <div class="hero-brand-header">
+        <h1 class="hero-main-title">FAMILY VAULT</h1>
+        <p class="hero-main-subtitle">One Family. One Memory. One Intelligent Living Digital Twin.</p>
       </div>
 
-      <!-- 2. Typewriter Text Paragraph -->
+      <!-- 2. Blurred Intro Label -->
+      <div class="blurred-intro-label">
+        🌟 Neuralyn &times; Living Digital Twin AI<br>
+        Privacy-First Multi-Agent Family Intelligence (7 Specialized Agents)
+      </div>
+
+      <!-- 3. Typewriter Text Paragraph from README -->
       <p class="typewriter-paragraph">
         <span id="typewriter-output"></span><span id="typewriter-cursor" class="typewriter-cursor"></span>
       </p>
 
-      <!-- 3. Action Pill Buttons -->
+      <!-- 4. Action Pill Buttons from README -->
       <div class="action-pills-container" id="action-pills-container">
-        <button class="pill-btn-white" data-action="pitch">Pitch us an idea</button>
-        <button class="pill-btn-white" data-action="work">Come work here</button>
-        <button class="pill-btn-white" data-action="hello">Send a brief hello</button>
-        <button class="pill-btn-white" data-action="operate" id="btn-enter-vault-action">See how we operate</button>
-        <button class="pill-btn-outline" id="btn-copy-email" title="Click to copy email address">
-          <span>Reach us: <span class="email-underlined">hello@mainframe.co</span></span>
+        <button class="pill-btn-white" data-action="knowledge">📂 Knowledge Vault & Passports</button>
+        <button class="pill-btn-white" data-action="legacy">⏳ Living Legacy Archive</button>
+        <button class="pill-btn-white" data-action="emergency">🚨 Medical Emergency Center</button>
+        <button class="pill-btn-white" data-action="agents">🤖 7 Multi-Agent System</button>
+        <button class="pill-btn-white" data-action="operate" id="btn-enter-vault-action">🛡️ Privacy & Access Matrix</button>
+        <button class="pill-btn-outline" id="btn-copy-email" title="Click to copy contact email">
+          <span>Reach us: <span class="email-underlined">support@familytwin.io</span></span>
           <svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -112,18 +119,18 @@
         </button>
       </div>
 
-      <!-- Vault Exploration CTA Gate Hint -->
+      <!-- Vault Exploration CTA Gate Button -->
       <div class="hero-vault-gate-hint">
-        <button id="btn-hero-enter-vault-link" class="btn-vault-gate">
+        <button id="btn-hero-enter-vault-link" class="btn-vault-gate primary-gate">
           <span>Click Enter into Vault to explore more</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
 
     </div>
 
     <!-- Toast Notification for Copy -->
-    <div id="copy-toast" class="copy-toast hidden">Copied hello@mainframe.co to clipboard!</div>
+    <div id="copy-toast" class="copy-toast hidden">Copied support@familytwin.io to clipboard!</div>
   </section>
 
 
