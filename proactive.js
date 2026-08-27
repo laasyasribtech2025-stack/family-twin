@@ -5,44 +5,68 @@
 const ProactiveModule = {
   activeAlerts: [
     {
-      id: "alert-passport-dad",
-      title: "🚨 Urgent: Arthur's Passport Expiration in 48 Days",
-      description: "Arthur's US Passport (#USA-982148192) expires on Oct 14, 2026. Most international airlines enforce the 6-month validity rule. Immediate renewal recommended.",
-      category: "Passports & Travel",
+      id: "alert-1",
+      title: "Passport Expiring Soon",
+      description: "Leo's passport expires in 4 months (October 2026). Direct renewal takes 8 weeks.",
+      type: "warning",
+      category: "Travel",
+      actionText: "Renew Passport"
+    },
+    {
+      id: "alert-2",
+      title: "Dangerous Drug Overlap",
+      description: "Grandma Elena's medications (Lisinopril & Aspirin) overlap. Risk of minor blood pressure dips. Monitored.",
       type: "critical",
+      category: "Health",
+      actionText: "Consult Doctor"
+    },
+    {
+      id: "alert-3",
+      title: "High Electricity Usage Spike",
+      description: "June electricity bill is $285 (35% higher than the historical summer average). Check HVAC filter.",
+      type: "warning",
+      category: "Bills",
+      actionText: "Compare Usage"
+    },
+    {
+      id: "alert-4",
+      title: "Mom's Birthday Gift Alert",
+      description: "Mom's birthday is on July 14. Flowers or gifts have not been scheduled yet.",
+      type: "warning",
+      category: "Calendar",
+      actionText: "Order Flowers"
+    },
+    {
+      id: "alert-5",
+      title: "Unworn Items Audit",
+      description: "Your favorite leather boots have not been worn or logged in 12 months. Relocate to attic?",
+      type: "info",
+      category: "Wardrobe",
+      actionText: "Relocate"
+    },
+    {
+      id: "alert-6",
+      title: "Refrigerator Food Expiration",
+      description: "Milk carton expires tomorrow. Suggested action: Make french toast or pudding tonight.",
+      type: "info",
+      category: "Kitchen",
+      actionText: "View Recipe"
+    },
+    {
+      id: "alert-passport-dad",
+      title: "Arthur's Passport Expiration in 48 Days",
+      description: "Arthur's US Passport (#USA-982148192) expires on Oct 14, 2026. Schedule renewal before international travel.",
+      category: "Travel",
+      type: "warning",
       actionText: "Draft Renewal Appt"
     },
     {
-      id: "alert-passport-chloe",
-      title: "⚠️ Warning: Chloe's Passport Expiration in 70 Days",
-      description: "Chloe's US Passport (#USA-662910482) expires on Nov 05, 2026. Schedule renewal before the upcoming holiday travel window.",
-      category: "Passports & Travel",
-      type: "warning",
-      actionText: "Schedule Renewal"
-    },
-    {
       id: "alert-insurance-renewal",
-      title: "📋 House & Flood Policy Renewal Due",
-      description: "BlueCross Family Shield Gold (#BC-9481-2294A) annual renewal due on Nov 12, 2026. Policy covers $1.2M property & flood protection.",
+      title: "House & Flood Policy Renewal Due",
+      description: "BlueCross Family Shield Gold (#BC-9481-2294A) annual renewal due on Nov 12, 2026. Coverage: $1.2M.",
       category: "Insurance",
       type: "info",
-      actionText: "Review Policy Terms"
-    },
-    {
-      id: "alert-elena-meds",
-      title: "💊 Prescription Refill: Grandma Elena",
-      description: "Metformin 500mg supply is at 6 days remaining. Automated refill request ready for CVS Pharmacy on 4th Ave.",
-      category: "Health & Pharmacy",
-      type: "critical",
-      actionText: "Send CVS Refill Request"
-    },
-    {
-      id: "alert-auto-fleet",
-      title: "🚗 Fleet Insurance & Tesla Maintenance",
-      description: "Geico Policy #GE-3392-1088 annual premium due Dec 01, 2026. 2024 Tesla Model Y tire rotation and cabin air filter due at 25,000 miles.",
-      category: "Vehicles & Auto",
-      type: "info",
-      actionText: "Schedule Service"
+      actionText: "Review Terms"
     }
   ],
 
