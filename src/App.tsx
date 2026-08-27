@@ -41,8 +41,8 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const typewriterText =
-    "One Family. One Memory. One Intelligent Living Digital Twin. Preserving verified memories, securing sensitive documents, and proactively safeguarding what matters most.";
-  const { displayed, done } = useTypewriter(typewriterText, 28, 500);
+    "Preserving what matters most. Securing memories, documents, and family heritage in one intelligent sanctuary.";
+  const { displayed, done } = useTypewriter(typewriterText, 30, 500);
 
   // Show action pills 400ms after mount
   useEffect(() => {
@@ -99,8 +99,8 @@ export default function App() {
   }, []);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText('support@familytwin.io');
-    setToastMessage('Copied support@familytwin.io to clipboard!');
+    navigator.clipboard.writeText('hello@familytwin.io');
+    setToastMessage('Copied hello@familytwin.io to clipboard!');
     setTimeout(() => {
       setToastMessage(null);
     }, 2200);
@@ -217,14 +217,14 @@ export default function App() {
               FAMILY VAULT
             </h1>
             <p className="text-white/90 text-sm sm:text-base mt-2 tracking-tight">
-              One Family. One Memory. One Intelligent Living Digital Twin.
+              One Family. One Memory. One Living Digital Twin.
             </p>
           </div>
 
           {/* 1. Blurred Intro Label */}
           <div className="pointer-events-none select-none mb-3 text-[clamp(14px,2.5vw,18px)] leading-[1.35] font-normal text-white blur-[3px]">
-            🌟 Neuralyn &times; Living Digital Twin AI<br />
-            Privacy-First Multi-Agent Family Intelligence (7 Specialized Agents)
+            Hey there, meet A.R.I.A,<br />
+            Your Family's Living Digital Twin AI
           </div>
 
           {/* 2. Typewriter Text */}
@@ -244,11 +244,10 @@ export default function App() {
             }`}
           >
             {[
-              '📂 Knowledge Vault & Passports',
-              '⏳ Living Legacy Archive',
-              '🚨 Medical Emergency Center',
-              '🤖 7 Multi-Agent System',
-              '🛡️ Privacy & Access Matrix'
+              'Explore Vault',
+              'Living Legacy',
+              'AI Concierge',
+              'Emergency Mode'
             ].map((label) => (
               <button
                 key={label}
@@ -263,7 +262,7 @@ export default function App() {
               className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-transparent text-white border border-white rounded-full text-[13px] sm:text-[14px] px-4 sm:px-4.5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-white hover:text-black transition-colors duration-200"
             >
               <span>
-                Reach us: <span className="underline underline-offset-1">support@familytwin.io</span>
+                Reach us: <span className="underline underline-offset-1">hello@familytwin.io</span>
               </span>
               <svg
                 className="w-3 h-3 shrink-0"

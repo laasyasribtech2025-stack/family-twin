@@ -86,32 +86,31 @@
     <!-- Hero Content Container (z-index: 1) -->
     <div class="mainframe-content-container">
       
-      <!-- 1. Big Title: FAMILY VAULT -->
+      <!-- Big Title: FAMILY VAULT -->
       <div class="hero-brand-header">
         <h1 class="hero-main-title">FAMILY VAULT</h1>
-        <p class="hero-main-subtitle">One Family. One Memory. One Intelligent Living Digital Twin.</p>
+        <p class="hero-main-subtitle">One Family. One Memory. One Living Digital Twin.</p>
       </div>
 
-      <!-- 2. Blurred Intro Label -->
+      <!-- Clean Blurred Intro Label -->
       <div class="blurred-intro-label">
-        🌟 Neuralyn &times; Living Digital Twin AI<br>
-        Privacy-First Multi-Agent Family Intelligence (7 Specialized Agents)
+        Hey there, meet A.R.I.A,<br>
+        Your Family's Living Digital Twin AI
       </div>
 
-      <!-- 3. Typewriter Text Paragraph from README -->
+      <!-- Clean Typewriter Text Paragraph -->
       <p class="typewriter-paragraph">
         <span id="typewriter-output"></span><span id="typewriter-cursor" class="typewriter-cursor"></span>
       </p>
 
-      <!-- 4. Action Pill Buttons from README -->
+      <!-- Clean Action Pill Buttons -->
       <div class="action-pills-container" id="action-pills-container">
-        <button class="pill-btn-white" data-action="knowledge">📂 Knowledge Vault & Passports</button>
-        <button class="pill-btn-white" data-action="legacy">⏳ Living Legacy Archive</button>
-        <button class="pill-btn-white" data-action="emergency">🚨 Medical Emergency Center</button>
-        <button class="pill-btn-white" data-action="agents">🤖 7 Multi-Agent System</button>
-        <button class="pill-btn-white" data-action="operate" id="btn-enter-vault-action">🛡️ Privacy & Access Matrix</button>
+        <button class="pill-btn-white" data-action="knowledge">Explore Vault</button>
+        <button class="pill-btn-white" data-action="legacy">Living Legacy</button>
+        <button class="pill-btn-white" data-action="agents">AI Concierge</button>
+        <button class="pill-btn-white" data-action="emergency">Emergency Mode</button>
         <button class="pill-btn-outline" id="btn-copy-email" title="Click to copy contact email">
-          <span>Reach us: <span class="email-underlined">support@familytwin.io</span></span>
+          <span>Reach us: <span class="email-underlined">hello@familytwin.io</span></span>
           <svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -130,7 +129,7 @@
     </div>
 
     <!-- Toast Notification for Copy -->
-    <div id="copy-toast" class="copy-toast hidden">Copied support@familytwin.io to clipboard!</div>
+    <div id="copy-toast" class="copy-toast hidden">Copied hello@familytwin.io to clipboard!</div>
   </section>
 
 
@@ -180,17 +179,17 @@
 
       <!-- Return to Landing Page Button -->
       <div class="sidebar-landing-switch">
-        <button id="btn-return-landing" class="btn-return-hero" title="Return to Lumora Hero Page">
+        <button id="btn-return-landing" class="btn-return-hero" title="Return to Main Hero Page">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-          <span>← Lumora Hero</span>
+          <span>← Hero Page</span>
         </button>
       </div>
 
       <div class="user-status-card">
         <div class="avatar" id="current-user-avatar">A</div>
         <div class="info">
-          <h4 id="current-user-name">Dad (Arthur)</h4>
-          <span class="role-badge" id="current-user-role">Owner / Admin</span>
+          <span class="user-name" id="current-user-name">Arthur (Dad)</span>
+          <span class="user-role" id="current-user-role">Owner / Admin</span>
         </div>
       </div>
     </aside>
@@ -270,6 +269,35 @@
           
           <!-- View 1: Dashboard -->
           <div id="view-dashboard" class="app-view active">
+            
+            <!-- Dashboard Live Info Strip Line -->
+            <div class="dashboard-info-strip">
+              <div class="strip-item">
+                <span class="strip-dot online"></span>
+                <span class="strip-text"><strong>5 Family Members</strong> Active</span>
+              </div>
+              <span class="strip-sep">|</span>
+              <div class="strip-item">
+                <span class="strip-dot blue"></span>
+                <span class="strip-text"><strong>7 AI Sub-Agents</strong> Monitoring</span>
+              </div>
+              <span class="strip-sep">|</span>
+              <div class="strip-item">
+                <span class="strip-dot gold"></span>
+                <span class="strip-text"><strong>14 Vault Records</strong> & Passports Stored</span>
+              </div>
+              <span class="strip-sep">|</span>
+              <div class="strip-item">
+                <span class="strip-dot purple"></span>
+                <span class="strip-text"><strong>Zero-Knowledge RBAC</strong> Shield Active</span>
+              </div>
+              <span class="strip-sep">|</span>
+              <div class="strip-item">
+                <span class="strip-dot green"></span>
+                <span class="strip-text"><strong>Emergency Protocol</strong> Ready</span>
+              </div>
+            </div>
+
             <!-- Family Members Grid -->
             <div class="dashboard-section">
               <h3 class="section-title">Family Circle</h3>

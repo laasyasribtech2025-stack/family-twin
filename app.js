@@ -75,9 +75,9 @@ function initHeroLanding() {
     });
   }
 
-  // --- Typewriter Text Animation from README ---
-  const typewriterText = "One Family. One Memory. One Intelligent Living Digital Twin. Preserving verified memories, securing sensitive documents, and proactively safeguarding what matters most.";
-  const typeSpeed = 28; // ms per char for smooth reading
+  // --- Typewriter Text Animation ---
+  const typewriterText = "Preserving what matters most. Securing memories, documents, and family heritage in one intelligent sanctuary.";
+  const typeSpeed = 30; // ms per char for clean reading
   const startDelay = 500; // ms
 
   if (typewriterOutput) {
@@ -105,7 +105,7 @@ function initHeroLanding() {
   if (copyBtn) {
     copyBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const email = "support@familytwin.io";
+      const email = "hello@familytwin.io";
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(email);
       }
