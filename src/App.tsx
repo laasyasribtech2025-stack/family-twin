@@ -133,31 +133,6 @@ export default function App() {
           </span>
         </div>
 
-        {/* Desktop Nav Links (center, hidden below md) */}
-        <nav className="hidden md:flex items-center text-[20px] text-white">
-          {navLinks.map((link, idx) => (
-            <React.Fragment key={link}>
-              <a
-                href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}
-                className="hover:opacity-60 transition-opacity duration-200"
-              >
-                {link}
-              </a>
-              {idx < navLinks.length - 1 && <span className="mr-1.5">, </span>}
-            </React.Fragment>
-          ))}
-        </nav>
-
-        {/* Desktop CTA (right, hidden below md) */}
-        <div className="hidden md:flex items-center gap-4">
-          <a
-            href="#contact"
-            className="text-[20px] text-white underline underline-offset-2 hover:opacity-60 transition-opacity duration-200"
-          >
-            Concierge AI
-          </a>
-        </div>
-
         {/* Mobile Hamburger (visible below md) */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -188,23 +163,12 @@ export default function App() {
           mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        {navLinks.map((link) => (
-          <a
-            key={link}
-            href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-[30px] font-medium text-white hover:opacity-60"
-          >
-            {link}
-          </a>
-        ))}
-        <a
-          href="#contact"
+        <button
           onClick={() => setMobileMenuOpen(false)}
-          className="text-[30px] font-medium text-white underline underline-offset-4 hover:opacity-60"
+          className="text-[28px] font-medium text-white text-left"
         >
-          Concierge AI
-        </a>
+          Enter Family Vault &rarr;
+        </button>
       </div>
 
       {/* Hero Section (z-index: 1) */}
@@ -243,20 +207,6 @@ export default function App() {
                 : 'opacity-0 translate-y-2 pointer-events-none'
             }`}
           >
-            {[
-              'Explore Vault',
-              'Living Legacy',
-              'AI Concierge',
-              'Emergency Mode'
-            ].map((label) => (
-              <button
-                key={label}
-                className="inline-flex items-center justify-center bg-white text-black border border-black/10 rounded-full text-[13px] sm:text-[14px] px-4 sm:px-4.5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-black hover:text-white transition-colors duration-200"
-              >
-                {label}
-              </button>
-            ))}
-
             <button
               onClick={handleCopyEmail}
               className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-transparent text-white border border-white rounded-full text-[13px] sm:text-[14px] px-4 sm:px-4.5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-white hover:text-black transition-colors duration-200"
