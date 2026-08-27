@@ -1,414 +1,113 @@
-# Family Concierge AI – Powered by a Living Digital Twin
+# 🌟 Neuralyn × Family Vault — Living Digital Twin AI
 
-> **One Family. One Memory. One Intelligent Concierge.**
+> **One Family. One Memory. One Intelligent Living Digital Twin.**
 
-Family Concierge AI is a **privacy-first, multi-agent AI platform** that creates a **Living Digital Twin** of a family. It securely organizes family knowledge, coordinates responsibilities, preserves verified memories, and proactively solves everyday challenges. Unlike traditional AI assistants that simply answer questions, Family Concierge AI understands relationships, permissions, routines, and family context to provide intelligent, personalized assistance while ensuring complete privacy and security.
-
----
-
-# 🌟 Problem Statement
-
-Every family has invisible knowledge that is scattered across different people.
-
-* 👩 Mom remembers medicines, recipes, birthdays, and shopping lists.
-* 👨 Dad manages investments, insurance, house documents, and finances.
-* 👧 Children know Wi-Fi passwords, subscriptions, and digital accounts.
-* 👴 Grandparents carry priceless stories, traditions, advice, and memories.
-
-When someone becomes unavailable due to illness, travel, aging, or unexpected circumstances, important knowledge is often lost.
-
-Traditional AI assistants are reactive—they wait for commands.
-
-Families need an AI that **understands, protects, coordinates, and preserves** family knowledge.
+**Neuralyn × Family Vault** is a privacy-first, multi-agent AI web application that creates an authentic **Living Digital Twin** for families and teams. It merges a **high-end video hero landing page** with a **fully functional multi-agent AI system (7 agents)**, real **image & video uploading**, an **encrypted knowledge vault**, a **living legacy archive**, and an **instant medical emergency response center**.
 
 ---
 
-# 💡 Solution
+## 🚀 Live Demo & Quick Launch
 
-Family Concierge AI builds a secure **Living Digital Twin** that understands:
+### 1. Open in Browser
+If the local server is running:
+👉 **[http://localhost:8080/](http://localhost:8080/)** (or `http://localhost:5173/`)
 
-* Family relationships
-* Responsibilities
-* Knowledge ownership
-* Privacy permissions
-* Daily routines
-* Medical information
-* Important documents
-* Family memories
+### 2. Run Locally in Any IDE / Terminal
+No external dependencies or build tools needed! Simply serve the directory:
 
-The AI proactively assists the family, predicts problems, and preserves authentic memories for future generations.
+```bash
+# Option A: Python Built-in Server
+python -m http.server 8080
 
----
+# Option B: Node.js (if installed)
+npx serve .
 
-# ✨ Key Features
-
-## 🧠 Family Digital Twin
-
-Visualizes the entire family's knowledge and responsibilities.
-
-* Understands who knows what
-* Connects family relationships
-* Creates an intelligent knowledge graph
-* Prevents knowledge loss
+# Option C: VS Code / IDE Live Server
+# Right click `index.html` -> "Open with Live Server"
+```
 
 ---
 
-## 🤖 Multi-Agent AI System
+## ✨ Features Overview
 
-Built using **Google Agent Development Kit (ADK)**.
-
-Specialized AI Agents include:
-
-* Concierge Agent
-* Knowledge Agent
-* Emergency Agent
-* Legacy Agent
-* Privacy Agent
-* Coordinator Agent
-* Proactive Agent
-
-Each agent performs a dedicated task while collaborating with others.
+### 🌌 1. Dual-Mode Video Hero Landing Page
+- **Neuralyn Dark Tech Mode**:
+  - Background video loop (`neuralyn_bg.mp4`).
+  - Title: *"Your Insights. One Clear Overview."* with **Instrument Serif** italic accent.
+  - Liquid Glass Capsule pill: *"Say Hello to Corewave v3.2 & Living Digital Twin"*.
+- **Golden Aethera Mode**:
+  - Background video loop (`hero.mp4`).
+  - Title: **"FAMILY VAULT"** in **DM Mono 300** light display typography.
+  - Floating glass link capsule navbar with real-time status.
+- **Scroll-Driven Word Reveal**: Section 2 Testimonial quote with progressive word illumination on scroll.
+- **Instant Entry Action**: *"Get Started for Free"* / *"Enter Vault"* button transitions directly into the Family Twin workspace.
 
 ---
 
-## 🔒 Privacy & Security
+### 🤖 2. Fully Functional Multi-Agent AI System
+The AI assistant routes queries intelligently across **7 specialized sub-agents**:
+1. 🛎️ **Concierge Agent**: Natural language router & central orchestrator.
+2. 📖 **Knowledge Agent**: Instant semantic lookup across all family files with strict RBAC.
+3. 🚨 **Emergency Agent**: Critical medical history, vitals, and hospital logistics.
+4. ⏳ **Legacy Agent**: Authentic oral memories, transcripts, and recipes.
+5. 🗓️ **Coordinator Agent**: Routine syncing, calendars, and family task delegation.
+6. 🛡️ **Privacy Agent**: Granular permission verification and live audit trail.
+7. 👁️ **Proactive Agent**: Autonomous risk and expiration scanner.
 
-Privacy is built into every interaction.
-
-Features include:
-
-* Role-Based Access Control (RBAC)
-* Secure Knowledge Vault
-* Audit Logs
-* Permission Management
-* Emergency Access
-* Verified Information
-* Explainable AI Responses
-
-Every family member controls their own information.
+- **Explainable Responses**: Every answer includes physical/digital location coordinates (e.g. *Cupboard 2 (Blue Folder)*), verification badges, and confidence metrics.
+- **Google Gemini API Connectivity**: Optional API key drawer to stream live responses from Google Gemini 1.5/2.0.
 
 ---
 
-## 📂 Knowledge Vault
-
-Securely stores:
-
-* House Documents
-* Insurance Papers
-* Passwords
-* Recipes
-* Medical Records
-* Investments
-* Subscriptions
-* Important Notes
-
-AI instantly retrieves verified information when needed.
+### 🎥 3. Real Image, Video & Audio File Uploading
+- **Supported Formats**: Photos (`.png, .jpg, .webp`), videos (`.mp4, .webm`), voice notes (`.mp3, .wav`), and documents (`.pdf, .txt`).
+- **Drag & Drop**: Drop files anywhere on the dashboard upload zone.
+- **Fullscreen Lightbox**: Click any uploaded image or video to view in a high-resolution lightbox overlay with playback controls.
+- **In-Browser Persistence**: Uploaded assets and newly created vault nodes persist in `localStorage`.
 
 ---
 
-## 🚨 Emergency Center
-
-One-click emergency support.
-
-Instantly displays:
-
-* Current Medicines
-* Allergies
-* Blood Group
-* Emergency Contacts
-* Doctor Details
-* Hospital Information
-* Insurance Documents
-
-Designed to reduce response time during emergencies.
+### 📂 4. Encrypted Knowledge Vault & Living Legacy
+- **Knowledge Vault**: Categorized by *Documents, Passwords, Health, Legacy*. Role-Based Access Control (RBAC) dynamically locks content if the active user lacks permissions.
+- **Living Legacy Archive**: Interactive memory timeline with custom waveform audio players, photo galleries, and video boxes.
+- **Grandma Elena Emergency Mode**: One-click *"Grandma Collapsed"* trigger displaying Elena's blood type (O+), allergies (Penicillin, Peanuts), daily prescriptions, hospital distance, and automated coordinator tasks.
 
 ---
 
-## 🕊️ Living Legacy
-
-Preserves authentic family memories.
-
-Includes:
-
-* Voice Recordings
-* Stories
-* Recipes
-* Letters
-* Photos
-* Videos
-
-Unlike AI clones, Family Concierge AI **never generates fake memories**.
-
-Only verified recordings and documents are used.
+### 🎨 5. Customization & Ambiance
+- **Dashboard Themes**: Switch between *Pure Black*, *Cyber Glow*, *Golden Aethera*, and *Deep Space* from the top bar.
+- **Ambient Music Synthesizer**: Web Audio API soothing pentatonic background music generator.
 
 ---
 
-## ⚡ Proactive Concierge
-
-Instead of waiting for commands, the AI continuously monitors important events.
-
-Examples:
-
-* Passport Expiry
-* Dangerous Medicine Interactions
-* Food Expiry
-* Birthday Reminders
-* Electricity Bill Spikes
-* Subscription Renewals
-* Vehicle Service Reminders
-* Insurance Expiry
-
-The AI helps before problems occur.
-
----
-
-## 📅 Family Coordinator
-
-Automatically coordinates family activities.
-
-Examples:
-
-* School Pickup
-* Grocery Shopping
-* Medicine Reminders
-* Family Calendar
-* Shared Tasks
-* Event Planning
-
----
-
-## 📖 Explainable AI
-
-Every AI response includes:
-
-* Source of Information
-* Verification Status
-* Confidence Score
-* Access Reason
-
-This improves transparency and trust.
-
----
-
-# 🏗️ System Architecture
+## 📂 Project Structure
 
 ```text
-                    User
-                      │
-              Concierge Agent
-                      │
-     ┌───────── ADK Multi-Agent System ─────────┐
-     │                                          │
-Knowledge  Emergency  Legacy  Privacy  Coordinator  Proactive
-     │                                          │
-     └────────────── MCP Servers ───────────────┘
-Knowledge  Medical  Calendar  Legacy  Storage
-                      │
-                  SQLite Database
+family-twin/
+├── index.html            # Main HTML with Hero Landing & Twin Workspace
+├── style.css             # Liquid glass, typography, dark themes, lightbox
+├── app.js                # Multi-agent AI engine, file uploaders, RBAC, state
+├── hero.mp4              # Golden Aethera background video loop
+├── neuralyn_bg.mp4       # Neuralyn Dark Tech background video loop
+├── public/               # Static assets directory
+│   ├── hero.mp4
+│   └── neuralyn_bg.mp4
+└── README.md             # Project documentation & guide
 ```
 
 ---
 
-# 🛠️ Technology Stack
+## 👥 Family Circle & Permissions Matrix
 
-### Frontend
-
-* HTML5
-* CSS3
-* JavaScript
-
-### Backend
-
-* Python
-* FastAPI
-
-### AI
-
-* Google Gemini
-* Google Agent Development Kit (ADK)
-
-### Tool Integration
-
-* MCP Servers
-
-### Database
-
-* SQLite
-
-### Development
-
-* Antigravity
-
-### Deployment
-
-* Docker
-* Cloud Run / Render
+| Family Member | Default Role | Access Scope |
+| :--- | :--- | :--- |
+| **Arthur (Dad)** | Owner / Admin | Full access to deeds, insurance, passwords, and investments |
+| **Sarah (Mom)** | Family Admin | Full access to health records, recipes, and insurance |
+| **Leo (Son)** | Member | Full access to streaming & gaming passwords; restricted finance |
+| **Chloe (Daughter)** | Member | Full access to Wi-Fi & streaming hub; restricted finance |
+| **Elena (Grandma)** | Elder / Senior | Full access to medical profile & heritage stories |
 
 ---
 
-# 📸 Demo Features
-
-* 🧠 Interactive Family Digital Twin
-* 💬 AI Concierge Chat
-* 📂 Knowledge Vault
-* 🚨 Emergency Dashboard
-* 🕊️ Living Legacy Archive
-* ⚡ Proactive Alerts
-* 📅 Family Coordinator
-* 🔒 Privacy Center
-* 🎵 Ambient Background Music
-* 🌙 Modern Responsive UI
-
----
-
-# 🚀 Getting Started
-
-## Clone Repository
-
-```bash
-git clone https://github.com/your-username/family-concierge-ai.git
-```
-
-## Navigate
-
-```bash
-cd family-concierge-ai
-```
-
-## Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## Run Backend
-
-```bash
-uvicorn backend.main:app --reload
-```
-
-Open:
-
-```
-http://localhost:8000
-```
-
----
-
-# 📂 Project Structure
-
-```text
-Family-Concierge-AI
-│
-├── frontend/
-│   ├── index.html
-│   ├── style.css
-│   ├── app.js
-│
-├── backend/
-│   ├── main.py
-│
-├── agents/
-│   ├── concierge_agent.py
-│   ├── knowledge_agent.py
-│   ├── emergency_agent.py
-│   ├── legacy_agent.py
-│   ├── privacy_agent.py
-│   ├── coordinator_agent.py
-│   └── proactive_agent.py
-│
-├── mcp/
-│
-├── database/
-│
-├── assets/
-│
-├── README.md
-│
-└── requirements.txt
-
-                     ☁️ Google Gemini
-                            ▲
-                            │
-                    🤖 Concierge AI
-                 (Master Intelligence)
-
-        ┌─────────────┼─────────────┐
-        │             │             │
-        ▼             ▼             ▼
-
- 📚 Knowledge     🚑 Emergency    🕊 Legacy
-    Agent            Agent          Agent
-
-        ▼             ▼             ▼
-
- 🔒 Privacy      📅 Coordinator   ⚡ Proactive
-     Agent           Agent           Agent
-
-        └─────────────┼─────────────┘
-
-              🌐 MCP Tool Layer
-
-     📂 Documents
-     🏥 Medical
-     📆 Calendar
-     📷 Memories
-     🗄 Database
-
-                 ▼
-
-        💙 Living Digital Twin
-
-                 ▼
-
-      👨 Dad 👩 Mom 👧 Daughter
-      👦 Son 👵 Grandma 👴 Grandpa
-
-                 ▼
-
-      💻 Beautiful Web Dashboard
-```
-
----
-
-# 🎯 Hackathon Evaluation Coverage
-
-| Requirement                | Status                                                       |
-| -------------------------- | ------------------------------------------------------------ |
-| ✅ Multi-Agent System (ADK) | Implemented                                                  |
-| ✅ MCP Server Integration   | Implemented                                                  |
-| ✅ Antigravity              | Used during development                                      |
-| ✅ Security Features        | RBAC, Audit Logs, Privacy Controls                           |
-| ✅ Deployability            | Docker & Cloud Deployment Ready                              |
-| ✅ Agent Skills             | Knowledge Search, Planning, Emergency Response, Coordination |
-
----
-
-# 🌍 Future Enhancements
-
-* Smart Home Integration
-* Wearable Device Support
-* Voice Assistant
-* IoT Integration
-* Hospital & Government API Integration
-* Secure Family Cloud Backup
-* AI Financial Planning
-* Travel Planning Assistant
-
----
-
-# 👨‍💻 Author
-
-Developed as a **Concierge Agents Hackathon** project to demonstrate how AI can securely protect family knowledge, coordinate everyday life, and preserve authentic memories through a privacy-first, multi-agent architecture.
-
----
-
-## ⭐ If you like this project, consider giving it a Star!
-[style.css](https://github.com/user-attachments/files/29387084/style.css)
-[security.js](https://github.com/user-attachments/files/29387081/security.js)
-[proactive.js](https://github.com/user-attachments/files/29387076/proactive.js)
-[index.html](https://github.com/user-attachments/files/29387074/index.html)
-[mcpSimulator.js](https://github.com/user-attachments/files/29387072/mcpSimulator.js)
-[legacy.js](https://github.com/user-attachments/files/29387069/legacy.js)
-[app.js](https://github.com/user-attachments/files/29387063/app.js)
-[agentSystem.js](https://github.com/user-attachments/files/29387022/agentSystem.js)
+## 📜 License
+Developed for the **Concierge Agents Hackathon** powered by Antigravity Multi-Agent Architecture.
