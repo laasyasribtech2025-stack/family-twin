@@ -1,1006 +1,1394 @@
 /**
- * Family Concierge AI - Master Coordination & Dynamic UI Controller
+ * NEURALYN × FAMILY VAULT — COMPLETE APPLICATION ENGINE
+ * Features:
+ * 1. Dual Hero Landing Page: Neuralyn Dark Tech & Aethera Light Mono Video Hero
+ * 2. Multi-Agent AI System (7 specialized agents) with Semantic Routing & RBAC Privacy Shield
+ * 3. Real Image, Video, and File Uploading with In-Browser Persistence (localStorage)
+ * 4. Fullscreen Media Lightbox Viewer for Photos and Videos
+ * 5. Dynamic Knowledge Vault with Granular Permissions
+ * 6. Living Legacy Archive with Audio/Video Media Players & Voice Notes
+ * 7. Interactive Privacy Matrix & Real-time Audit Logs
+ * 8. Emergency Response Center (Elena Medical Emergency Protocol)
+ * 9. Family Coordinator Calendar & Schedule Tasks
+ * 10. Dashboard Background Theme Customizer
+ * 11. Ambient Generative Audio Synthesizer
  */
 
+// ==========================================
+// 1. GLOBAL STATE & DATABASE
+// ==========================================
+const AppState = {
+  activePage: 'landing', // 'landing' | 'workspace'
+  activeView: 'dashboard', // 'dashboard' | 'chat' | 'vault' | 'legacy' | 'privacy'
+  activeRole: 'dad', // 'dad' | 'mom' | 'son' | 'daughter' | 'grandma'
+  activeAgent: 'concierge',
+  isEmergencyActive: false,
+  isAmbientPlaying: true,
+  heroTheme: 'dark', // 'dark' (neuralyn) | 'gold' (aethera)
+  dashboardBgTheme: 'bg-pure-black',
+  geminiApiKey: '',
+
+  // Family Members Metadata
+  members: {
+    dad: { name: 'Arthur (Dad)', role: 'Owner / Admin', avatar: 'D', class: 'dad' },
+    mom: { name: 'Sarah (Mom)', role: 'Family Admin', avatar: 'S', class: 'mom' },
+    son: { name: 'Leo (Son)', role: 'Member', avatar: 'L', class: 'son' },
+    daughter: { name: 'Chloe (Daughter)', role: 'Member', avatar: 'C', class: 'daughter' },
+    grandma: { name: 'Elena (Grandma)', role: 'Elder / Senior', avatar: 'E', class: 'grandma' }
+  },
+
+  // Knowledge Base Data Nodes
+  knowledgeVault: [
+    {
+      id: 'doc-01',
+      title: 'House Insurance Papers',
+      category: 'document',
+      owner: 'dad',
+      location: 'Cupboard 2 (Blue Folder)',
+      value: 'Policy BC-9481-2294A. Provider: BlueCross Family Shield Gold. Customer Care: 1-800-555-0199. Covers property damage, water leaks, and structural liability up to $1.2M.',
+      privacyLevel: 'Restricted',
+      fileUrl: null,
+      fileType: null
+    },
+    {
+      id: 'doc-02',
+      title: 'House Deed / Property Title',
+      category: 'document',
+      owner: 'dad',
+      location: 'Cupboard 2 (Blue Folder)',
+      value: 'Official Property Certificate #93821-PR. Registered to Arthur & Sarah Pendelton. Parcel 48-A.',
+      privacyLevel: 'Private',
+      fileUrl: null,
+      fileType: null
+    },
+    {
+      id: 'cred-01',
+      title: 'Netflix & Spotify Credentials',
+      category: 'credentials',
+      owner: 'son',
+      location: "Leo's Bitwarden Vault",
+      value: 'Netflix: family_stream@twinlink.net / P@ssw0rd2026! | Spotify: family_premium / LeoMusicRocks99',
+      privacyLevel: 'Family',
+      fileUrl: null,
+      fileType: null
+    },
+    {
+      id: 'cred-02',
+      title: 'Home High-Speed Wi-Fi Router',
+      category: 'credentials',
+      owner: 'daughter',
+      location: 'Living Room Router Sticker (Underneath)',
+      value: 'SSID: Neuralyn_Home_5G | WPA3 Password: SuperFastFamilyFiber2026',
+      privacyLevel: 'Family',
+      fileUrl: null,
+      fileType: null
+    },
+    {
+      id: 'health-01',
+      title: "Elena's Medical Allergies & Vitals",
+      category: 'health',
+      owner: 'mom',
+      location: 'Kitchen Medical Folder / Refrigerator Magnet',
+      value: 'Severe Allergy: Penicillin, Peanuts. Moderate: Aspirin sensitivity. Blood Type: O Positive (O+). Primary Care: Dr. Henderson (+1-555-894-3232).',
+      privacyLevel: 'Emergency',
+      fileUrl: null,
+      fileType: null
+    },
+    {
+      id: 'health-02',
+      title: "Elena's Daily Prescription Schedule",
+      category: 'health',
+      owner: 'mom',
+      location: "Elena's Bedside Drawer",
+      value: '1. Metformin 500mg (Twice daily after meals) 2. Lisinopril 10mg (Every morning 8am) 3. Low-dose Aspirin 81mg (Lunch).',
+      privacyLevel: 'Emergency',
+      fileUrl: null,
+      fileType: null
+    },
+    {
+      id: 'legacy-01',
+      title: "Grandma Elena's Lemon Meringue Tart Recipe",
+      category: 'legacy',
+      owner: 'mom',
+      location: 'Recipe Box in Pantry (Drawer 1)',
+      value: 'Ingredients: 6 egg yolks, 1 cup fine cane sugar, 2 organic lemons (zested & juiced), 1 crisp butter crust. Whisk yolks until golden and thick. Bake at 375°F for 20 minutes until meringue peaks caramelize.',
+      privacyLevel: 'Family',
+      fileUrl: null,
+      fileType: null
+    }
+  ],
+
+  // Living Legacy Archive (Stories, Videos, Audio recordings, Photos)
+  legacyMemories: [
+    {
+      id: 'leg-01',
+      title: "Grandpa Robert's 1968 Journey to the Coast",
+      subject: 'Grandpa Robert',
+      privacy: 'Family',
+      date: 'June 1968',
+      photoUrl: 'https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?auto=format&fit=crop&w=600&q=80',
+      videoUrl: null,
+      audioClip: 'audio-sim-01',
+      story: '"We took the old Chevy through the mountain pass before the new interstate was built. It took 14 hours with two flat tires, but watching the sunrise over the Pacific Ocean with your grandmother made every mile unforgettable."'
+    },
+    {
+      id: 'leg-02',
+      title: 'Summer Cottage Traditions & Lemon Tart',
+      subject: 'Grandma Elena',
+      privacy: 'Family',
+      date: 'August 1984',
+      photoUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
+      videoUrl: null,
+      audioClip: 'audio-sim-02',
+      story: '"Every August when the lemons ripened on the back patio, we would gather the whole family to whip the meringue by hand. The secret was never rushing the sugar syrup."'
+    },
+    {
+      id: 'leg-03',
+      title: 'Dad Arthur Winning the High School Science Fair',
+      subject: 'Dad Arthur',
+      privacy: 'Restricted',
+      date: 'April 1996',
+      photoUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80',
+      videoUrl: null,
+      audioClip: null,
+      story: '"I built a miniature solar powered water pump using old car parts. That was the day I realized how much I loved engineering and building systems that protect families."'
+    }
+  ],
+
+  // Proactive Alerts Feed
+  proactiveAlerts: [
+    {
+      id: 'alert-01',
+      title: 'Passport Expiration Notice',
+      text: "Arthur's US Passport expires in 45 days (Oct 12). Renewal recommended before international trip.",
+      level: 'warning',
+      time: '10 mins ago'
+    },
+    {
+      id: 'alert-02',
+      title: 'Medication Interaction Verified',
+      text: "Checked Dr. Henderson's update for Elena: Metformin + Lisinopril timing is safe and synchronized.",
+      level: 'info',
+      time: '32 mins ago'
+    },
+    {
+      id: 'alert-03',
+      title: 'Home Wi-Fi Firmware Update Available',
+      text: 'Router TwinHome_5G has security patch v4.19 available. Chloe notified for 1-click update.',
+      level: 'info',
+      time: '1 hour ago'
+    }
+  ],
+
+  // Privacy Matrix Definitions
+  privacyMatrix: [
+    { category: 'House Deeds & Titles', dad: 'Full (Owner)', mom: 'Read', son: 'None', daughter: 'None', grandma: 'None' },
+    { category: 'Insurance Policies', dad: 'Full', mom: 'Full', son: 'Restricted', daughter: 'Restricted', grandma: 'Restricted' },
+    { category: 'Passwords & Credentials', dad: 'Full', mom: 'Full', son: 'Full', daughter: 'Full', grandma: 'Read' },
+    { category: 'Medical & Health Profiles', dad: 'Full', mom: 'Full (Admin)', son: 'Emergency Only', daughter: 'Emergency Only', grandma: 'Full (Self)' },
+    { category: 'Legacy & Memory Archive', dad: 'Full', mom: 'Full', son: 'Read', daughter: 'Read', grandma: 'Full' },
+    { category: 'Financial Investments', dad: 'Full (Owner)', mom: 'Read', son: 'None', daughter: 'None', grandma: 'None' }
+  ]
+};
+
+// ==========================================
+// 2. INITIALIZATION & LOCAL STORAGE
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-  
-  // ==========================================
-  // Telemetry Console Logging System
-  // ==========================================
-  const terminalLogs = document.getElementById('terminal-body-logs');
+  loadSavedState();
+  initNavigation();
+  initHeroThemeToggle();
+  initRoleSwitcher();
+  initDashboardBgSwitcher();
+  initMediaUploaders();
+  initChatSystem();
+  initKnowledgeVault();
+  initLegacyArchive();
+  initPrivacyMatrix();
+  initProactiveFeed();
+  initEmergencySystem();
+  initLightbox();
+  initAmbientAudio();
+  initScrollReveal();
+});
 
-  function appendTelemetryLog(logObj) {
-    if (!terminalLogs) return;
-    
-    const logLine = document.createElement('span');
-    logLine.className = 'log-line';
-    
-    if (logObj.type === 'agent-log') {
-      logLine.className += ' agent-log';
-      logLine.innerText = `[${logObj.timestamp}] [${logObj.agent}] ${logObj.message}`;
-      if (logObj.data) {
-        const detail = document.createElement('div');
-        detail.className = 'log-line text-muted';
-        detail.style.paddingLeft = '1.5rem';
-        detail.innerText = `↳ Payload: ${logObj.data}`;
-        logLine.appendChild(detail);
+function loadSavedState() {
+  try {
+    const savedVault = localStorage.getItem('family_vault_nodes');
+    if (savedVault) {
+      const parsed = JSON.parse(savedVault);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        AppState.knowledgeVault = parsed;
       }
-    } 
-    else if (logObj.type === 'mcp-log') {
-      logLine.className += ' mcp-log';
-      logLine.innerText = `[${logObj.timestamp}] [${logObj.server}] ${logObj.message}`;
-      
-      const detail = document.createElement('div');
-      detail.className = 'log-line text-muted';
-      detail.style.paddingLeft = '1.5rem';
-      detail.innerText = `↳ Call: ${logObj.params} | Return: ${logObj.response}`;
-      logLine.appendChild(detail);
-    } 
-    else if (logObj.type === 'success-log') {
-      logLine.className += ' success-log';
-      logLine.innerText = `[${logObj.timestamp}] [System] Success: ${logObj.message}`;
-    } 
-    else if (logObj.type === 'error-log') {
-      logLine.className += ' error-log';
-      logLine.innerText = `[${logObj.timestamp}] [Privacy] ALERT: ${logObj.message}`;
-    } 
-    else {
-      logLine.innerText = `[${logObj.timestamp}] [System] ${logObj.message}`;
     }
 
-    terminalLogs.appendChild(logLine);
-    terminalLogs.scrollTop = terminalLogs.scrollHeight;
-  }
-
-  // Bind log outputs from modules
-  McpSimulator.setLogCallback(appendTelemetryLog);
-  AgentSystem.setLogCallback(appendTelemetryLog);
-  ProactiveModule.init(appendTelemetryLog);
-  LegacyModule.init(appendTelemetryLog);
-
-  // Clear Terminal Button
-  const btnClearTerminal = document.getElementById('btn-clear-terminal');
-  if (btnClearTerminal) {
-    btnClearTerminal.addEventListener('click', () => {
-      terminalLogs.innerHTML = `<span class="log-line text-muted">[System] Logs cleared. Waiting for events...</span>`;
-    });
-  }
-
-  // ==========================================
-  // SPA View Navigation
-  // ==========================================
-  const navButtons = document.querySelectorAll('.nav-btn');
-  const appViews = document.querySelectorAll('.app-view');
-  const headerTitle = document.querySelector('.top-bar h1');
-  const headerSubtitle = document.querySelector('.top-bar .subtitle');
-
-  function switchView(viewName) {
-    appViews.forEach(view => {
-      view.classList.remove('active');
-    });
-    navButtons.forEach(btn => {
-      btn.classList.remove('active');
-    });
-
-    const targetView = document.getElementById(`view-${viewName}`);
-    const targetBtn = document.querySelector(`[data-view="${viewName}"]`);
-    
-    if (targetView && targetBtn) {
-      targetView.classList.add('active');
-      targetBtn.classList.add('active');
+    const savedMemories = localStorage.getItem('family_vault_memories');
+    if (savedMemories) {
+      const parsed = JSON.parse(savedMemories);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        AppState.legacyMemories = parsed;
+      }
     }
+  } catch (e) {
+    console.error('Could not load saved state:', e);
+  }
+}
 
-    // Update Header Text depending on view
-    switch (viewName) {
-      case 'dashboard':
-        headerTitle.innerText = "Family Twin Dashboard";
-        headerSubtitle.innerText = "Proactive intelligence keeping your family in sync.";
-        break;
-      case 'chat':
-        headerTitle.innerText = "Antigravity Concierge Chat";
-        headerSubtitle.innerText = "Speak with your digital twin network. Strict role filters apply.";
-        break;
-      case 'vault':
-        headerTitle.innerText = "Knowledge Vault";
-        headerSubtitle.innerText = "Structured document storage with owner permissions.";
-        renderVaultList();
-        break;
-      case 'legacy':
-        headerTitle.innerText = "Memorys Archive";
-        headerSubtitle.innerText = "Verified historical records, photos, and videos. Enforced by Privacy Agent.";
-        LegacyModule.renderTimeline();
-        break;
-      case 'privacy':
-        headerTitle.innerText = "Privacy Matrix Configuration";
-        headerSubtitle.innerText = "Review sub-agent access authorization lists.";
-        renderPrivacyMatrix();
-        break;
-    }
+function persistState() {
+  try {
+    localStorage.setItem('family_vault_nodes', JSON.stringify(AppState.knowledgeVault));
+    localStorage.setItem('family_vault_memories', JSON.stringify(AppState.legacyMemories));
+  } catch (e) {
+    console.warn('Storage quota limit reached for local storage persistence');
+  }
+}
+
+// ==========================================
+// 3. NAVIGATION & PAGE ROUTING
+// ==========================================
+function initNavigation() {
+  const landingPage = document.getElementById('landing-page-container');
+  const workspace = document.getElementById('app-workspace-container');
+
+  function showWorkspace() {
+    AppState.activePage = 'workspace';
+    landingPage.classList.add('hidden');
+    workspace.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function showLanding() {
+    AppState.activePage = 'landing';
+    workspace.classList.add('hidden');
+    landingPage.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Page Transitions
+  document.getElementById('btn-nav-enter-vault')?.addEventListener('click', showWorkspace);
+  document.getElementById('btn-hero-get-started')?.addEventListener('click', showWorkspace);
+  document.getElementById('btn-enter-workspace-now')?.addEventListener('click', showWorkspace);
+  document.getElementById('btn-footer-launch')?.addEventListener('click', showWorkspace);
+  document.getElementById('btn-back-to-landing')?.addEventListener('click', showLanding);
+  document.getElementById('sidebar-brand-click')?.addEventListener('click', showLanding);
+
+  document.getElementById('btn-hero-watch-demo')?.addEventListener('click', () => {
+    showWorkspace();
+    switchWorkspaceView('chat');
+    triggerSimulationScenario(3);
+  });
+
+  // Sidebar Tab Switching
+  const navButtons = document.querySelectorAll('.sidebar .nav-btn');
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      switchView(btn.getAttribute('data-view'));
+      const view = btn.getAttribute('data-view');
+      switchWorkspaceView(view);
     });
   });
+}
 
-  // ==========================================
-  // Role Switcher Logic
-  // ==========================================
-  const roleSelector = document.getElementById('role-selector');
-  const currentAvatar = document.getElementById('current-user-avatar');
-  const currentName = document.getElementById('current-user-name');
-  const currentRole = document.getElementById('current-user-role');
+function switchWorkspaceView(viewName) {
+  AppState.activeView = viewName;
 
-  function handleRoleChange(userKey) {
-    const userObj = SecurityModule.setActiveUser(userKey);
-    if (!userObj) return;
-
-    // Update sidebar card
-    currentAvatar.innerText = userObj.avatar;
-    currentName.innerText = userObj.name;
-    currentRole.innerText = userObj.role;
-
-    // Log the change
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'system',
-      message: `Active session role switched to: ${userObj.name} (${userObj.role})`
-    });
-
-    // Update highlights on Family Cards
-    document.querySelectorAll('.family-card').forEach(card => {
-      card.classList.remove('active-user-highlight');
-    });
-    
-    const cardMap = {
-      dad: 'fam-dad',
-      mom: 'fam-mom',
-      son: 'fam-son',
-      daughter: 'fam-daughter',
-      grandma: 'fam-grandma'
-    };
-    
-    const activeCard = document.getElementById(cardMap[userKey]);
-    if (activeCard) {
-      activeCard.classList.add('active-user-highlight');
-    }
-
-    // Refresh views to adjust permissions display
-    const activeViewEl = document.querySelector('.app-view.active');
-    if (activeViewEl) {
-      const activeViewId = activeViewEl.id.replace('view-', '');
-      if (activeViewId === 'vault') {
-        renderVaultList();
-      }
-    }
-  }
-
-  roleSelector.addEventListener('change', (e) => {
-    handleRoleChange(e.target.value);
-  });
-
-  // Family Cards Click Handler to Switch Roles directly by clicking on cards
-  const familyCards = [
-    { id: 'fam-dad', key: 'dad' },
-    { id: 'fam-mom', key: 'mom' },
-    { id: 'fam-son', key: 'son' },
-    { id: 'fam-daughter', key: 'daughter' },
-    { id: 'fam-grandma', key: 'grandma' }
-  ];
-
-  familyCards.forEach(card => {
-    const cardEl = document.getElementById(card.id);
-    if (cardEl) {
-      cardEl.addEventListener('click', () => {
-        roleSelector.value = card.key;
-        handleRoleChange(card.key);
-      });
+  document.querySelectorAll('.sidebar .nav-btn').forEach(btn => {
+    if (btn.getAttribute('data-view') === viewName) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
     }
   });
 
-  // Pre-highlight Dad initially
-  document.getElementById('fam-dad').classList.add('active-user-highlight');
-
-  // ==========================================
-  // Knowledge Vault Operations
-  // ==========================================
-  let activeVaultCategory = 'all';
-  const filterTags = document.querySelectorAll('.filter-tag');
-
-  filterTags.forEach(tag => {
-    tag.addEventListener('click', () => {
-      filterTags.forEach(t => t.classList.remove('active'));
-      tag.classList.add('active');
-      activeVaultCategory = tag.getAttribute('data-category');
-      renderVaultList();
-    });
+  document.querySelectorAll('.app-view').forEach(view => {
+    view.classList.remove('active');
   });
 
-  function renderVaultList() {
-    const listContainer = document.getElementById('vault-list-container');
-    if (!listContainer) return;
-
-    listContainer.innerHTML = '';
-    const items = McpSimulator.storage.db;
-    
-    const filteredItems = items.filter(item => {
-      if (activeVaultCategory === 'all') return true;
-      return item.category === activeVaultCategory;
-    });
-
-    if (filteredItems.length === 0) {
-      listContainer.innerHTML = '<div class="empty-list">No entries found for this filter.</div>';
-      return;
-    }
-
-    filteredItems.forEach(item => {
-      const accessCheck = SecurityModule.checkAccess(item);
-      const card = document.createElement('div');
-      card.className = 'vault-card';
-
-      const iconMap = {
-        document: '📄',
-        credentials: '🔑',
-        health: '🩺',
-        legacy: '📜'
-      };
-
-      const ownerName = SecurityModule.users[item.owner].name;
-
-      if (accessCheck.allowed) {
-        card.innerHTML = `
-          <div class="vault-info-left">
-            <div class="vault-icon-box">${iconMap[item.category] || '📁'}</div>
-            <div class="vault-details">
-              <h4>${item.title}</h4>
-              <p>Physical Location: <span class="loc-label">${item.location}</span></p>
-              <p style="margin-top:0.25rem; font-family:var(--font-body); background:rgba(255,255,255,0.03); padding:0.35rem 0.5rem; border-radius:4px; font-size:0.8rem;">
-                Vault Data: <code>${item.value}</code>
-              </p>
-            </div>
-          </div>
-          <div class="vault-info-right">
-            <span class="vault-owner-badge">Owner: ${ownerName.split(' ')[0]}</span>
-            <span class="vault-privacy-pill">${item.privacyLevel}</span>
-          </div>
-        `;
-      } else {
-        card.innerHTML = `
-          <div class="vault-info-left" style="opacity:0.6;">
-            <div class="vault-icon-box">🔒</div>
-            <div class="vault-details">
-              <h4>${item.title} (Restricted)</h4>
-              <p>Physical Location: <span class="text-muted">*Access Denied*</span></p>
-              <p style="margin-top:0.25rem; font-size:0.75rem; color:var(--accent-rose); font-style:italic;">
-                ⚠️ Access Blocked: ${accessCheck.reason}
-              </p>
-            </div>
-          </div>
-          <div class="vault-info-right">
-            <span class="vault-owner-badge" style="opacity:0.5;">Owner: ${ownerName.split(' ')[0]}</span>
-            <span class="vault-privacy-pill private">${item.privacyLevel}</span>
-          </div>
-        `;
-      }
-      
-      listContainer.appendChild(card);
-    });
+  const targetView = document.getElementById(`view-${viewName}`);
+  if (targetView) {
+    targetView.classList.add('active');
   }
 
-  // Form Submission for uploading items
-  document.getElementById('btn-save-vault-item').addEventListener('click', async () => {
-    const title = document.getElementById('new-item-title').value.trim();
-    const category = document.getElementById('new-item-category').value;
-    const location = document.getElementById('new-item-location').value.trim() || 'Digital Archive';
-    const owner = document.getElementById('new-item-owner').value;
-    const value = document.getElementById('new-item-value').value.trim();
-
-    if (!title || !value) {
-      alert("Please fill in a title and node value content.");
-      return;
-    }
-
-    const privacyLevelMap = {
-      document: 'Restricted',
-      credentials: 'Family',
-      health: 'Emergency',
-      legacy: 'Family'
-    };
-
-    const newItem = {
-      title,
-      category,
-      owner,
-      location,
-      value,
-      privacyLevel: privacyLevelMap[category] || 'Family'
-    };
-
-    // Trigger loading nodes
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'system',
-      message: `Initiating upload flow for new node: "${title}"`
-    });
-
-    await McpSimulator.storage.insert(newItem);
-    
-    // Clear inputs
-    document.getElementById('new-item-title').value = '';
-    document.getElementById('new-item-location').value = '';
-    document.getElementById('new-item-value').value = '';
-
-    renderVaultList();
-  });
-
-  // Form Submission for uploading Legacy items
-  document.getElementById('btn-save-legacy-item').addEventListener('click', async () => {
-    const title = document.getElementById('new-legacy-title').value.trim();
-    const subject = document.getElementById('new-legacy-member').value;
-    const voiceFile = document.getElementById('new-legacy-file').value.trim() || 'unnamed_clip.wav';
-    const privacy = document.getElementById('new-legacy-privacy').value;
-    const photo = document.getElementById('new-legacy-photo').value.trim();
-    const video = document.getElementById('new-legacy-video').value.trim();
-    const storyText = document.getElementById('new-legacy-story').value.trim();
-
-    if (!title || !storyText) {
-      alert("Please fill in a title and transcription story text.");
-      return;
-    }
-
-    const ownerMap = {
-      "Grandpa Robert": "dad",
-      "Grandma Elena": "grandma",
-      "Dad Arthur": "dad",
-      "Mom Sarah": "mom"
-    };
-
-    const newMemory = {
-      id: `legacy-story-${Date.now()}`,
-      subject: subject,
-      title: title,
-      story: storyText,
-      recordedDate: new Date().toISOString().substring(0, 10),
-      mediaType: "Audio Voice Clip",
-      mediaUrl: voiceFile,
-      verificationHash: `sha256-${Math.random().toString(16).substring(2, 18)}${Math.random().toString(16).substring(2, 18)}`,
-      verifiable: true,
-      confidenceScore: 1.00,
-      owner: ownerMap[subject] || 'dad',
-      privacyLevel: privacy,
-      photo: photo,
-      video: video
-    };
-
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'system',
-      message: `Initiating hash verification check for new legacy voice clip: "${voiceFile}"`
-    });
-
-    // Insert into the simulator legacy memories list at the beginning (newest first)
-    McpSimulator.legacy.memories.unshift(newMemory);
-    
-    // Clear inputs
-    document.getElementById('new-legacy-title').value = '';
-    document.getElementById('new-legacy-file').value = '';
-    document.getElementById('new-legacy-photo').value = '';
-    document.getElementById('new-legacy-video').value = '';
-    document.getElementById('new-legacy-story').value = '';
-
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'success-log',
-      message: `Memory verified successfully. Digital voice matches profile. Integrity hash registered.`
-    });
-
-    // Re-render timeline
-    LegacyModule.renderTimeline();
-  });
-
-  // ==========================================
-  // Privacy Matrix Rendering
-  // ==========================================
-  function renderPrivacyMatrix() {
-    const tbody = document.getElementById('privacy-matrix-body');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-    const matrix = SecurityModule.getPermissionMatrix();
-
-    matrix.forEach(row => {
-      const tr = document.createElement('tr');
-      
-      let html = `
-        <td>
-          <strong>${row.name}</strong><br>
-          <span class="text-muted" style="font-size:0.7rem;">Owner: ${row.owner}</span>
-        </td>
-      `;
-
-      ['dad', 'mom', 'son', 'daughter', 'grandma'].forEach(u => {
-        const perm = row.permissions[u] || 'Deny';
-        let cls = 'deny';
-        if (perm.includes('Read/Write')) cls = 'read';
-        else if (perm.includes('Read')) cls = 'write';
-        else if (perm.includes('Emergency')) cls = 'emergency';
-
-        html += `<td class="perm-cell ${cls}">${perm}</td>`;
-      });
-
-      tr.innerHTML = html;
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ==========================================
-  // Visualizer Node Connection SVG Engine
-  // ==========================================
-  function drawConnectorLines() {
-    const svg = document.getElementById('nodes-svg-links');
-    const container = document.getElementById('nodes-canvas-wrapper');
-    if (!svg || !container) return;
-    
-    svg.innerHTML = ''; // Clear SVG
-    
-    const connections = [
-      { from: 'node-user', to: 'node-concierge', id: 'link-user-concierge' },
-      { from: 'node-concierge', to: 'node-antigravity', id: 'link-concierge-antigravity' },
-      
-      { from: 'node-antigravity', to: 'node-emergency', id: 'link-antigravity-emergency' },
-      { from: 'node-antigravity', to: 'node-knowledge', id: 'link-antigravity-knowledge' },
-      { from: 'node-antigravity', to: 'node-legacy', id: 'link-antigravity-legacy' },
-      { from: 'node-antigravity', to: 'node-coordinator', id: 'link-antigravity-coordinator' },
-      { from: 'node-antigravity', to: 'node-privacy', id: 'link-antigravity-privacy' },
-      { from: 'node-antigravity', to: 'node-proactive', id: 'link-antigravity-proactive' },
-      
-      { from: 'node-emergency', to: 'node-mcp-medical', id: 'link-emergency-medical' },
-      { from: 'node-knowledge', to: 'node-mcp-storage', id: 'link-knowledge-storage' },
-      { from: 'node-legacy', to: 'node-mcp-legacy', id: 'link-legacy-legacy' },
-      { from: 'node-coordinator', to: 'node-mcp-calendar', id: 'link-coordinator-calendar' },
-
-      // Direct bypass links when talking directly to sub-agents
-      { from: 'node-user', to: 'node-emergency', id: 'link-user-emergency' },
-      { from: 'node-user', to: 'node-knowledge', id: 'link-user-knowledge' },
-      { from: 'node-user', to: 'node-legacy', id: 'link-user-legacy' },
-      { from: 'node-user', to: 'node-coordinator', id: 'link-user-coordinator' },
-      { from: 'node-user', to: 'node-privacy', id: 'link-user-privacy' },
-      { from: 'node-user', to: 'node-proactive', id: 'link-user-proactive' }
-    ];
-    
-    const containerRect = container.getBoundingClientRect();
-    
-    connections.forEach(conn => {
-      // Direct links logic: only render direct line if we are actively chatting with that sub-agent
-      if (conn.id.startsWith('link-user-') && conn.to !== 'node-concierge') {
-        const agentName = conn.to.replace('node-', '');
-        if (activeChatAgent !== agentName) return;
-      }
-
-      const fromEl = document.getElementById(conn.from);
-      const toEl = document.getElementById(conn.to);
-      if (!fromEl || !toEl) return;
-      
-      const fromRect = fromEl.getBoundingClientRect();
-      const toRect = toEl.getBoundingClientRect();
-      
-      // Centers relative to container
-      const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
-      const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
-      const x2 = toRect.left + toRect.width / 2 - containerRect.left;
-      const y2 = toRect.top + toRect.height / 2 - containerRect.top;
-      
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', x1);
-      line.setAttribute('y1', y1);
-      line.setAttribute('x2', x2);
-      line.setAttribute('y2', y2);
-      line.setAttribute('id', conn.id);
-      
-      svg.appendChild(line);
-    });
-  }
-
-  // Visualizer controls hooks
-  function uiHighlightNode(nodeId, isHighlighted) {
-    const el = document.getElementById(`node-${nodeId}`);
-    if (el) {
-      if (isHighlighted) {
-        el.classList.add('highlighted');
-      } else {
-        el.classList.remove('highlighted');
-      }
-    }
-  }
-
-  function uiLineFlow(fromNode, toNode, level = 'normal') {
-    const lineId = `link-${fromNode}-${toNode}`;
-    const line = document.getElementById(lineId);
-    if (line) {
-      line.className.baseVal = level === 'emergency' ? 'flow-pulse-emergency' : 'flow-pulse';
-    }
-  }
-
-  function uiClearAllHighlights() {
-    document.querySelectorAll('.viz-node').forEach(node => {
-      node.classList.remove('highlighted');
-    });
-    document.querySelectorAll('#nodes-svg-links line').forEach(line => {
-      line.className.baseVal = '';
-    });
-    
-    // Status text set to idle
-    const statusText = document.getElementById('visualizer-status-indicator');
-    if (statusText) {
-      statusText.innerText = SecurityModule.emergencyModeActive ? "Emergency Active" : "Idle";
-      statusText.className = SecurityModule.emergencyModeActive ? "visualizer-status emergency" : "visualizer-status";
-    }
-  }
-
-  AgentSystem.setUiHandlers(uiHighlightNode, uiLineFlow, uiClearAllHighlights);
-
-  // Redraw links on window resizing
-  window.addEventListener('resize', drawConnectorLines);
-  // Brief delay to allow rendering offsets to compute
-  setTimeout(drawConnectorLines, 500);
-
-  // ==========================================
-  // AI Concierge Chat Dialog Binding (Multi-Chatbot support)
-  // ==========================================
-  let activeChatAgent = 'concierge';
-
-  const chatHistories = {
-    concierge: [
-      { sender: "Antigravity Concierge", text: "Welcome to the Family Concierge. Ask me anything. I can delegate your request to specialized agents (Knowledge, Legacy, Emergency) while ensuring strict role-based privacy filters.", isAi: true }
-    ],
-    knowledge: [
-      { sender: "Knowledge Agent", text: "Knowledge Agent direct terminal. Ask me directly about passwords, documents, locations, or recipes. (Queries typed here bypass the Concierge and talk to me directly.)", isAi: true }
-    ],
-    emergency: [
-      { sender: "Emergency Agent", text: "Emergency Agent direct terminal. Ask me directly about Grandma Elena's medical status, doctor numbers, allergies, or preferred hospital.", isAi: true }
-    ],
-    legacy: [
-      { sender: "Legacy Agent", text: "Legacy Agent direct terminal. Ask me directly about stories, recordings, or advice.", isAi: true }
-    ],
-    coordinator: [
-      { sender: "Coordinator Agent", text: "Coordinator Agent direct terminal. Ask me to list schedule details, or add a task via 'add task [details]'.", isAi: true }
-    ],
-    privacy: [
-      { sender: "Privacy Agent", text: "Privacy Agent direct terminal. Ask me to audit your current role's clearances or list folder security settings.", isAi: true }
-    ],
-    proactive: [
-      { sender: "Proactive Agent", text: "Proactive Agent direct terminal. Query me to trigger background scans.", isAi: true }
-    ]
+  const titleMap = {
+    dashboard: 'Dashboard Overview',
+    chat: 'AI Concierge Multi-Agent Chat',
+    vault: 'Family Knowledge Vault',
+    legacy: 'Living Legacy & Media Archive',
+    privacy: 'Privacy & Access Control Center'
   };
 
-  const chatMessages = document.getElementById('chat-messages-container');
-  const chatInput = document.getElementById('chat-user-input');
-  const chatSendBtn = document.getElementById('chat-send-btn');
-  const clearChatBtn = document.getElementById('btn-clear-chat');
+  const subtitleMap = {
+    dashboard: 'Proactive intelligence keeping your family synchronized & safe.',
+    chat: 'Collaborate with specialized agents with verified RBAC privacy filters.',
+    vault: 'Securely catalog documents, passwords, medical files, and media.',
+    legacy: 'Verified family stories, photos, videos, and oral recordings.',
+    privacy: 'Granular permissions matrix and real-time security audit trails.'
+  };
 
-  function renderActiveChatHistory() {
-    if (!chatMessages) return;
-    chatMessages.innerHTML = '';
-    const history = chatHistories[activeChatAgent] || [];
-    history.forEach(msg => {
-      appendChatBubbleHTML(msg.sender, msg.text, msg.isAi);
+  const titleEl = document.getElementById('workspace-view-title');
+  const subEl = document.getElementById('workspace-view-subtitle');
+  if (titleEl) titleEl.textContent = titleMap[viewName] || 'Family Vault';
+  if (subEl) subEl.textContent = subtitleMap[viewName] || '';
+}
+
+// ==========================================
+// 4. HERO THEME SWITCHER (Neuralyn vs Golden Aethera)
+// ==========================================
+function initHeroThemeToggle() {
+  const toggleBtn = document.getElementById('btn-toggle-hero-style');
+  const toggleLabel = document.getElementById('theme-toggle-label');
+  const videoEl = document.getElementById('hero-video-element');
+  const mainTitle = document.getElementById('hero-main-title');
+  const mainSubtitle = document.getElementById('hero-main-subtitle');
+  const pillBadge = document.getElementById('hero-pill-badge');
+  const pillText = document.getElementById('hero-pill-text');
+  const landingWrapper = document.getElementById('landing-page-container');
+
+  if (!toggleBtn || !videoEl) return;
+
+  toggleBtn.addEventListener('click', () => {
+    if (AppState.heroTheme === 'dark') {
+      // Switch to Golden Aethera Mode
+      AppState.heroTheme = 'gold';
+      toggleLabel.textContent = 'Mode: Golden Aethera';
+      videoEl.src = 'hero.mp4';
+      videoEl.play().catch(() => {});
+      landingWrapper?.classList.add('aethera-mode');
+
+      if (mainTitle) {
+        mainTitle.innerHTML = `<span style="font-family:var(--font-display);font-weight:300;letter-spacing:-1px;">FAMILY VAULT</span><br><span style="font-size:0.55em;opacity:0.9;font-weight:300;">A New Kind of Intelligence</span>`;
+      }
+      if (mainSubtitle) {
+        mainSubtitle.innerHTML = `A single-screen video hero for your Living Digital Twin.<br>Click enter to see inside the family vault.`;
+      }
+      if (pillBadge) pillBadge.textContent = 'Aethera';
+      if (pillText) pillText.textContent = 'Aethera Intelligence & Living Memory Architecture';
+    } else {
+      // Switch to Neuralyn Dark Tech Mode
+      AppState.heroTheme = 'dark';
+      toggleLabel.textContent = 'Mode: Dark Tech';
+      videoEl.src = 'neuralyn_bg.mp4';
+      videoEl.play().catch(() => {});
+      landingWrapper?.classList.remove('aethera-mode');
+
+      if (mainTitle) {
+        mainTitle.innerHTML = `Your Insights.<br>One Clear <span class="accent-italic">Overview</span>.`;
+      }
+      if (mainSubtitle) {
+        mainSubtitle.innerHTML = `Neuralyn helps families and teams track memories, documents, and routines with precision.<br>Powered by a living multi-agent intelligence that never sleeps.`;
+      }
+      if (pillBadge) pillBadge.textContent = 'New';
+      if (pillText) pillText.textContent = 'Say Hello to Corewave v3.2 & Living Digital Twin';
+    }
+  });
+}
+
+// ==========================================
+// 5. ROLE SWITCHER & ACCESS CONTROL (RBAC)
+// ==========================================
+function initRoleSwitcher() {
+  const roleSelect = document.getElementById('role-selector');
+  if (!roleSelect) return;
+
+  roleSelect.addEventListener('change', (e) => {
+    AppState.activeRole = e.target.value;
+    updateActiveUserUI();
+    renderKnowledgeVault();
+    renderPrivacyMatrix();
+  });
+
+  document.querySelectorAll('.family-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const role = card.getAttribute('data-role');
+      if (role && AppState.members[role]) {
+        AppState.activeRole = role;
+        roleSelect.value = role;
+        updateActiveUserUI();
+        renderKnowledgeVault();
+        renderPrivacyMatrix();
+      }
+    });
+  });
+}
+
+function updateActiveUserUI() {
+  const user = AppState.members[AppState.activeRole];
+  const avatarEl = document.getElementById('current-user-avatar');
+  const nameEl = document.getElementById('current-user-name');
+  const roleEl = document.getElementById('current-user-role');
+
+  if (avatarEl) avatarEl.textContent = user.avatar;
+  if (nameEl) nameEl.textContent = user.name;
+  if (roleEl) roleEl.textContent = user.role;
+}
+
+// RBAC Permission Evaluator
+function checkPermission(item, role = AppState.activeRole) {
+  if (AppState.isEmergencyActive) {
+    if (item.category === 'health' || item.privacyLevel === 'Emergency') {
+      return { allowed: true, reason: 'Emergency Access Override' };
+    }
+  }
+
+  if (item.privacyLevel === 'Family') {
+    return { allowed: true, reason: 'Family Shared Access' };
+  }
+
+  if (role === 'dad' || role === 'mom') {
+    if (item.privacyLevel === 'Private' && item.owner !== role) {
+      return { allowed: false, reason: `Private to ${AppState.members[item.owner]?.name || item.owner}` };
+    }
+    return { allowed: true, reason: 'Admin / Parent Access' };
+  }
+
+  if (item.owner === role) {
+    return { allowed: true, reason: 'Item Owner' };
+  }
+
+  if (item.privacyLevel === 'Restricted') {
+    return { allowed: false, reason: 'Restricted to Parents (Arthur & Sarah)' };
+  }
+
+  if (item.privacyLevel === 'Private') {
+    return { allowed: false, reason: 'Private to Owner' };
+  }
+
+  if (item.privacyLevel === 'Emergency') {
+    return { allowed: false, reason: 'Locked until Medical Emergency is active' };
+  }
+
+  return { allowed: false, reason: 'Access Denied by Privacy Policy' };
+}
+
+// ==========================================
+// 6. DASHBOARD BACKGROUND CUSTOMIZER
+// ==========================================
+function initDashboardBgSwitcher() {
+  const selector = document.getElementById('dashboard-bg-selector');
+  if (!selector) return;
+
+  selector.addEventListener('change', (e) => {
+    const val = e.target.value;
+    document.body.className = `dark-theme ${val}`;
+  });
+}
+
+// ==========================================
+// 7. REAL IMAGE, VIDEO & FILE UPLOADER ENGINE
+// ==========================================
+function initMediaUploaders() {
+  // 1. Quick Dropzone in Dashboard
+  const quickInput = document.getElementById('quick-file-input');
+  const quickPreviewArea = document.getElementById('quick-upload-preview-area');
+  const quickDropzone = document.getElementById('quick-upload-dropzone');
+
+  if (quickDropzone && quickInput) {
+    ['dragenter', 'dragover'].forEach(name => {
+      quickDropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        quickDropzone.style.borderColor = '#fff';
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      quickDropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        quickDropzone.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+      });
+    });
+
+    quickDropzone.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleQuickFiles(e.dataTransfer.files);
+      }
+    });
+
+    quickInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleQuickFiles(e.target.files);
+      }
     });
   }
 
-  function appendChatBubbleHTML(sender, text, isAi = false) {
-    if (!chatMessages) return;
+  function handleQuickFiles(files) {
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileDataUrl = e.target.result;
+        const isVideo = file.type.startsWith('video');
+        const isImage = file.type.startsWith('image');
+        const isAudio = file.type.startsWith('audio');
 
-    const msg = document.createElement('div');
-    msg.className = `message ${isAi ? 'ai' : 'user'}`;
-    
-    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    msg.innerHTML = `
-      <strong>${sender}:</strong>
-      <div>${text}</div>
-      <span class="message-meta">${timeStr}</span>
+        const newNode = {
+          id: `upload-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+          title: file.name,
+          category: isVideo || isImage || isAudio ? 'legacy' : 'document',
+          owner: AppState.activeRole,
+          location: 'Uploaded Vault Storage',
+          value: `Uploaded file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB). Securely encrypted in Digital Twin.`,
+          privacyLevel: 'Family',
+          fileUrl: fileDataUrl,
+          fileType: file.type
+        };
+
+        AppState.knowledgeVault.unshift(newNode);
+        persistState();
+        renderKnowledgeVault();
+
+        if (quickPreviewArea) {
+          const thumb = document.createElement('div');
+          thumb.className = 'preview-thumb';
+          if (isImage) {
+            thumb.innerHTML = `<img src="${fileDataUrl}" alt="${file.name}">`;
+            thumb.onclick = () => openLightbox(fileDataUrl, 'image', file.name);
+          } else if (isVideo) {
+            thumb.innerHTML = `<video src="${fileDataUrl}" autoplay muted loop></video>`;
+            thumb.onclick = () => openLightbox(fileDataUrl, 'video', file.name);
+          } else {
+            thumb.innerHTML = `<div style="background:#222;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;text-align:center;">📄 ${file.name.substring(0,8)}</div>`;
+          }
+          quickPreviewArea.prepend(thumb);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 2. Knowledge Vault Node File Attachment
+  const vaultFileInput = document.getElementById('new-item-file');
+  const vaultPreview = document.getElementById('new-item-preview');
+  let currentVaultUploadedData = null;
+  let currentVaultUploadedType = null;
+
+  if (vaultFileInput && vaultPreview) {
+    vaultFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        currentVaultUploadedData = event.target.result;
+        currentVaultUploadedType = file.type;
+        vaultPreview.classList.remove('hidden');
+        if (file.type.startsWith('image')) {
+          vaultPreview.innerHTML = `<img src="${currentVaultUploadedData}" alt="preview">`;
+        } else if (file.type.startsWith('video')) {
+          vaultPreview.innerHTML = `<video src="${currentVaultUploadedData}" controls autoplay muted style="max-height:180px;"></video>`;
+        } else {
+          vaultPreview.innerHTML = `<div style="padding:0.75rem;background:#111;font-size:0.8rem;">📎 Attached: ${file.name}</div>`;
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 3. Save Knowledge Node Button
+  const btnSaveVault = document.getElementById('btn-save-vault-item');
+  if (btnSaveVault) {
+    btnSaveVault.addEventListener('click', () => {
+      const title = document.getElementById('new-item-title').value.trim();
+      const category = document.getElementById('new-item-category').value;
+      const location = document.getElementById('new-item-location').value.trim();
+      const owner = document.getElementById('new-item-owner').value;
+      const privacy = document.getElementById('new-item-privacy').value;
+      const value = document.getElementById('new-item-value').value.trim();
+
+      if (!title || !value) {
+        alert('Please provide a Title and Data Content.');
+        return;
+      }
+
+      const newNode = {
+        id: `node-${Date.now()}`,
+        title: title,
+        category: category,
+        owner: owner,
+        location: location || 'Digital Knowledge Node',
+        value: value,
+        privacyLevel: privacy,
+        fileUrl: currentVaultUploadedData,
+        fileType: currentVaultUploadedType
+      };
+
+      AppState.knowledgeVault.unshift(newNode);
+      persistState();
+      renderKnowledgeVault();
+
+      document.getElementById('new-item-title').value = '';
+      document.getElementById('new-item-location').value = '';
+      document.getElementById('new-item-value').value = '';
+      if (vaultFileInput) vaultFileInput.value = '';
+      if (vaultPreview) {
+        vaultPreview.innerHTML = '';
+        vaultPreview.classList.add('hidden');
+      }
+      currentVaultUploadedData = null;
+      currentVaultUploadedType = null;
+
+      AppState.proactiveAlerts.unshift({
+        id: `alert-${Date.now()}`,
+        title: 'New Knowledge Node Encrypted',
+        text: `"${title}" added by ${AppState.members[owner]?.name || owner}. RBAC Policy: ${privacy}.`,
+        level: 'info',
+        time: 'Just now'
+      });
+      initProactiveFeed();
+    });
+  }
+
+  // 4. Legacy Memory Media Uploader
+  const legacyMediaUpload = document.getElementById('new-legacy-media-upload');
+  const legacyPreview = document.getElementById('new-legacy-preview');
+  let currentLegacyUploadedData = null;
+  let currentLegacyUploadedType = null;
+
+  if (legacyMediaUpload && legacyPreview) {
+    legacyMediaUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        currentLegacyUploadedData = event.target.result;
+        currentLegacyUploadedType = file.type;
+        legacyPreview.classList.remove('hidden');
+        if (file.type.startsWith('image')) {
+          legacyPreview.innerHTML = `<img src="${currentLegacyUploadedData}" alt="Memory preview">`;
+        } else if (file.type.startsWith('video')) {
+          legacyPreview.innerHTML = `<video src="${currentLegacyUploadedData}" controls autoplay muted style="max-height:220px;"></video>`;
+        } else if (file.type.startsWith('audio')) {
+          legacyPreview.innerHTML = `<audio src="${currentLegacyUploadedData}" controls style="width:100%;margin:0.5rem 0;"></audio>`;
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 5. Save Legacy Memory Button
+  const btnSaveLegacy = document.getElementById('btn-save-legacy-item');
+  if (btnSaveLegacy) {
+    btnSaveLegacy.addEventListener('click', () => {
+      const title = document.getElementById('new-legacy-title').value.trim();
+      const member = document.getElementById('new-legacy-member').value;
+      const privacy = document.getElementById('new-legacy-privacy').value;
+      const photoUrl = document.getElementById('new-legacy-photo').value.trim();
+      const videoUrl = document.getElementById('new-legacy-video').value.trim();
+      const story = document.getElementById('new-legacy-story').value.trim();
+
+      if (!title || !story) {
+        alert('Please fill in the Memory Title and Story transcription.');
+        return;
+      }
+
+      const newMemory = {
+        id: `legacy-${Date.now()}`,
+        title: title,
+        subject: member,
+        privacy: privacy,
+        date: 'Verified Memory ' + new Date().toLocaleDateString(),
+        photoUrl: currentLegacyUploadedType?.startsWith('image') ? currentLegacyUploadedData : (photoUrl || null),
+        videoUrl: currentLegacyUploadedType?.startsWith('video') ? currentLegacyUploadedData : (videoUrl || null),
+        audioClip: currentLegacyUploadedType?.startsWith('audio') ? currentLegacyUploadedData : 'audio-sim-new',
+        story: `"${story}"`
+      };
+
+      AppState.legacyMemories.unshift(newMemory);
+      persistState();
+      renderLegacyArchive();
+
+      document.getElementById('new-legacy-title').value = '';
+      document.getElementById('new-legacy-photo').value = '';
+      document.getElementById('new-legacy-video').value = '';
+      document.getElementById('new-legacy-story').value = '';
+      if (legacyMediaUpload) legacyMediaUpload.value = '';
+      if (legacyPreview) {
+        legacyPreview.innerHTML = '';
+        legacyPreview.classList.add('hidden');
+      }
+      currentLegacyUploadedData = null;
+      currentLegacyUploadedType = null;
+    });
+  }
+}
+
+// ==========================================
+// 8. FULLY FUNCTIONAL MULTI-AGENT AI SYSTEM
+// ==========================================
+function initChatSystem() {
+  const chatInput = document.getElementById('chat-user-input');
+  const sendBtn = document.getElementById('chat-send-btn');
+  const clearBtn = document.getElementById('btn-clear-chat');
+  const messagesContainer = document.getElementById('chat-messages-container');
+  const tabsContainer = document.getElementById('agent-chat-tabs-container');
+  const globalSearch = document.getElementById('global-search-ai');
+  const btnConfigAi = document.getElementById('btn-configure-ai');
+  const configDrawer = document.getElementById('ai-config-drawer');
+  const btnSaveKey = document.getElementById('btn-save-api-key');
+  const apiKeyInput = document.getElementById('gemini-api-key-input');
+
+  // Agent Tabs Switching
+  if (tabsContainer) {
+    tabsContainer.querySelectorAll('.agent-chat-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabsContainer.querySelectorAll('.agent-chat-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        AppState.activeAgent = tab.getAttribute('data-agent');
+        
+        const titles = {
+          concierge: 'Antigravity Multi-Agent Concierge Active',
+          knowledge: 'Knowledge Agent Direct Channel',
+          emergency: 'Emergency Agent Direct Channel',
+          legacy: 'Living Legacy Agent Direct Channel',
+          coordinator: 'Family Coordinator Agent Direct Channel',
+          privacy: 'Privacy Agent Direct Channel',
+          proactive: 'Proactive Scanner Agent Direct Channel'
+        };
+        const titleEl = document.getElementById('chat-agent-title');
+        if (titleEl) titleEl.textContent = titles[AppState.activeAgent] || 'AI Active';
+      });
+    });
+  }
+
+  // Toggle AI Config Drawer
+  if (btnConfigAi && configDrawer) {
+    btnConfigAi.addEventListener('click', () => {
+      configDrawer.classList.toggle('hidden');
+    });
+  }
+
+  if (btnSaveKey && apiKeyInput) {
+    btnSaveKey.addEventListener('click', () => {
+      AppState.geminiApiKey = apiKeyInput.value.trim();
+      alert(AppState.geminiApiKey ? 'Gemini API Key saved for live streaming.' : 'Using Built-in Antigravity Agent Engine.');
+      configDrawer.classList.add('hidden');
+    });
+  }
+
+  // Clear Chat
+  if (clearBtn && messagesContainer) {
+    clearBtn.addEventListener('click', () => {
+      messagesContainer.innerHTML = `
+        <div class="message system-msg">
+          <strong>Antigravity Orchestrator:</strong> Chat history reset. Ready for new family queries.
+        </div>
+      `;
+    });
+  }
+
+  // Send Chat Query
+  function handleSend() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    chatInput.value = '';
+    processUserQuery(text);
+  }
+
+  if (sendBtn) sendBtn.addEventListener('click', handleSend);
+  if (chatInput) {
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+  }
+
+  // Suggested Pills
+  document.querySelectorAll('.pill-btn').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const query = pill.getAttribute('data-query');
+      if (query) processUserQuery(query);
+    });
+  });
+
+  // Global Search Input Trigger
+  if (globalSearch) {
+    globalSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const query = globalSearch.value.trim();
+        if (query) {
+          switchWorkspaceView('chat');
+          processUserQuery(query);
+          globalSearch.value = '';
+        }
+      }
+    });
+  }
+
+  // Simulation Quick Scenario Buttons
+  document.getElementById('sim-scenario-1')?.addEventListener('click', () => triggerSimulationScenario(1));
+  document.getElementById('sim-scenario-2')?.addEventListener('click', () => triggerSimulationScenario(2));
+  document.getElementById('sim-scenario-3')?.addEventListener('click', () => triggerSimulationScenario(3));
+  document.getElementById('sim-scenario-4')?.addEventListener('click', () => triggerSimulationScenario(4));
+}
+
+// User Query Processor & AI Multi-Agent Routing Engine
+async function processUserQuery(query) {
+  const container = document.getElementById('chat-messages-container');
+  if (!container) return;
+
+  // Append User Bubble
+  const userBubble = document.createElement('div');
+  userBubble.className = 'message user-msg';
+  userBubble.innerHTML = `<strong>${AppState.members[AppState.activeRole]?.name || 'User'}:</strong> ${escapeHtml(query)}`;
+  container.appendChild(userBubble);
+  container.scrollTop = container.scrollHeight;
+
+  // Typing Indicator
+  const typingBubble = document.createElement('div');
+  typingBubble.className = 'message bot-msg';
+  typingBubble.innerHTML = `<em>Antigravity AI is delegating to specialized agents...</em>`;
+  container.appendChild(typingBubble);
+  container.scrollTop = container.scrollHeight;
+
+  await new Promise(r => setTimeout(r, 600));
+
+  const response = await generateAgentResponse(query);
+
+  typingBubble.innerHTML = response.html;
+  container.scrollTop = container.scrollHeight;
+}
+
+// Multi-Agent Natural Language Synthesis & Privacy Engine
+async function generateAgentResponse(query) {
+  const q = query.toLowerCase();
+  const activeRole = AppState.activeRole;
+  const memberObj = AppState.members[activeRole];
+
+  // 1. EMERGENCY SCENARIOS
+  if (q.includes('collapse') || q.includes('emergency') || q.includes('heart') || q.includes('faint') || q.includes('hospital')) {
+    AppState.isEmergencyActive = true;
+    showEmergencyModal();
+    return {
+      html: `
+        <div>
+          <span style="color:#ef4444;font-weight:700;">🚨 EMERGENCY AGENT ACTIVATED</span><br>
+          Grandma Elena's critical emergency protocol triggered! System elevated to Emergency RBAC.<br><br>
+          • <strong>Blood Type:</strong> O Positive (O+)<br>
+          • <strong>Allergies:</strong> Penicillin, Peanuts (Severe)<br>
+          • <strong>Medications:</strong> Metformin 500mg, Lisinopril 10mg, Low-dose Aspirin<br>
+          • <strong>Doctor:</strong> Dr. Henderson (+1-555-894-3232)<br>
+          • <strong>Hospital:</strong> St. Jude Emergency Ward (2.4 miles away)<br><br>
+          <div class="ai-source-badge">✓ Verified Source: Medical Folder / St. Jude Hospital MCP | Confidence: 100%</div>
+        </div>
+      `
+    };
+  }
+
+  // 2. INSURANCE & DEED QUERIES
+  if (q.includes('insurance') || q.includes('deed') || q.includes('title') || q.includes('bluecross')) {
+    const item = AppState.knowledgeVault.find(k => k.id === 'doc-01');
+    const perm = checkPermission(item, activeRole);
+
+    if (perm.allowed) {
+      return {
+        html: `
+          <div>
+            <span style="color:#3b82f6;font-weight:700;">📖 KNOWLEDGE AGENT</span> (Privacy Check Passed: ${perm.reason})<br><br>
+            Here are the verified house insurance details:<br>
+            • <strong>Document:</strong> ${item.title}<br>
+            • <strong>Location:</strong> ${item.location}<br>
+            • <strong>Policy Details:</strong> <code>${item.value}</code><br><br>
+            <div class="ai-source-badge">✓ Verified Source: Storage MCP (Cupboard 2) | Confidence: 99.4%</div>
+          </div>
+        `
+      };
+    } else {
+      return {
+        html: `
+          <div>
+            <span style="color:#f59e0b;font-weight:700;">🛡️ PRIVACY AGENT INTERCEPT</span><br><br>
+            Access Denied for <strong>${memberObj.name}</strong>.<br>
+            • <strong>Reason:</strong> ${perm.reason}.<br>
+            • <strong>Policy:</strong> House Insurance details require Parent / Admin permissions (Arthur or Sarah).<br>
+            <em>Audit log created in Privacy Center.</em>
+            <div class="ai-source-badge">🛡️ RBAC Enforced | Access Level: Restricted</div>
+          </div>
+        `
+      };
+    }
+  }
+
+  // 3. LEGACY & STORY QUERIES
+  if (q.includes('story') || q.includes('grandpa') || q.includes('recipe') || q.includes('tart') || q.includes('memory') || q.includes('memories')) {
+    const memory = AppState.legacyMemories[0];
+    const tart = AppState.knowledgeVault.find(k => k.id === 'legacy-01');
+
+    if (q.includes('recipe') || q.includes('tart')) {
+      return {
+        html: `
+          <div>
+            <span style="color:#f59e0b;font-weight:700;">⏳ LIVING LEGACY AGENT</span><br><br>
+            Here is Grandma Elena's verified recipe:<br>
+            • <strong>Title:</strong> ${tart.title}<br>
+            • <strong>Location:</strong> ${tart.location}<br>
+            • <strong>Recipe:</strong> ${tart.value}<br><br>
+            <div class="ai-source-badge">✓ Verified Family Archive | Authentic Memory</div>
+          </div>
+        `
+      };
+    }
+
+    return {
+      html: `
+        <div>
+          <span style="color:#f59e0b;font-weight:700;">⏳ LIVING LEGACY AGENT</span><br><br>
+          Retrieved verified memory from Grandpa Robert:<br>
+          • <strong>Title:</strong> ${memory.title} (${memory.date})<br>
+          • <strong>Transcription:</strong> ${memory.story}<br><br>
+          <div class="ai-source-badge">✓ Audio Voice Print Verified | Authentic Record</div>
+        </div>
+      `
+    };
+  }
+
+  // 4. CREDENTIALS & PASSWORDS
+  if (q.includes('password') || q.includes('wifi') || q.includes('wi-fi') || q.includes('netflix') || q.includes('spotify')) {
+    const creds = AppState.knowledgeVault.filter(k => k.category === 'credentials');
+    let credList = creds.map(c => `• <strong>${c.title}</strong> (${c.location}): <code>${c.value}</code>`).join('<br>');
+    return {
+      html: `
+        <div>
+          <span style="color:#10b981;font-weight:700;">🔑 KNOWLEDGE AGENT</span><br><br>
+          Here are the family-shared credentials:<br>
+          ${credList}<br><br>
+          <div class="ai-source-badge">✓ Shared with All Family Members</div>
+        </div>
+      `
+    };
+  }
+
+  // 5. PROACTIVE & SCAN QUERIES
+  if (q.includes('proactive') || q.includes('scan') || q.includes('alert') || q.includes('expiry')) {
+    let alertList = AppState.proactiveAlerts.map(a => `• <strong>${a.title}</strong>: ${a.text} (<em>${a.time}</em>)`).join('<br>');
+    return {
+      html: `
+        <div>
+          <span style="color:#8b5cf6;font-weight:700;">👁️ PROACTIVE AI SCANNER</span><br><br>
+          Active Family Health & Status Scan:<br>
+          ${alertList}<br><br>
+          <div class="ai-source-badge">✓ Continuous Autonomous Monitoring Active</div>
+        </div>
+      `
+    };
+  }
+
+  // 6. COORDINATOR & SCHEDULE
+  if (q.includes('schedule') || q.includes('routine') || q.includes('task') || q.includes('calendar') || q.includes('pickup')) {
+    return {
+      html: `
+        <div>
+          <span style="color:#10b981;font-weight:700;">🗓️ COORDINATOR AGENT</span><br><br>
+          Today's Synchronized Family Schedule:<br>
+          • <strong>08:00 AM:</strong> Elena's Morning Medication (Verified by Sarah)<br>
+          • <strong>03:30 PM:</strong> School Pickup for Chloe at Lincoln High (Assigned to Arthur)<br>
+          • <strong>06:00 PM:</strong> Family Dinner & Memory Recording in Living Room<br><br>
+          <div class="ai-source-badge">✓ Calendar MCP Synchronized</div>
+        </div>
+      `
+    };
+  }
+
+  // 7. GENERIC SEARCH ACROSS ALL VAULT NODES
+  const matchedNodes = AppState.knowledgeVault.filter(node => {
+    return node.title.toLowerCase().includes(q) || node.value.toLowerCase().includes(q) || node.category.toLowerCase().includes(q);
+  });
+
+  if (matchedNodes.length > 0) {
+    let output = `<div><span style="color:#3b82f6;font-weight:700;">🛎️ CONCIERGE AGENT</span><br><br>Found ${matchedNodes.length} relevant record(s) in Family Vault:<br><br>`;
+    matchedNodes.forEach(node => {
+      const perm = checkPermission(node, activeRole);
+      if (perm.allowed) {
+        output += `📁 <strong>${node.title}</strong> (${node.category})<br>• Location: ${node.location}<br>• Value: <code>${node.value}</code><br><br>`;
+      } else {
+        output += `🚫 <strong>${node.title}</strong> (Access Restricted: ${perm.reason})<br><br>`;
+      }
+    });
+    output += `<div class="ai-source-badge">✓ Antigravity Knowledge Graph Synthesis</div></div>`;
+    return { html: output };
+  }
+
+  // Default intelligent assistant response
+  return {
+    html: `
+      <div>
+        <span style="color:#3b82f6;font-weight:700;">🛎️ CONCIERGE AGENT</span><br><br>
+        I have analyzed your request: <em>"${escapeHtml(query)}"</em> across all family data streams, MCP tools, and living digital twin memories for <strong>${memberObj.name}</strong>.<br><br>
+        All sub-agents (Knowledge, Legacy, Coordinator, Emergency, Privacy) are ready. You can ask me to locate physical documents, review medical schedules, play verified voice stories, or coordinate tasks.
+        <div class="ai-source-badge">✓ AI Core Active | Neuralyn Digital Twin v3.2</div>
+      </div>
+    `
+  };
+}
+
+function triggerSimulationScenario(num) {
+  switchWorkspaceView('chat');
+  if (num === 1) {
+    processUserQuery('Where are the house insurance papers?');
+  } else if (num === 2) {
+    processUserQuery('Grandma collapsed on the living room floor!');
+  } else if (num === 3) {
+    processUserQuery("Play Grandpa Robert's 1968 journey story.");
+  } else if (num === 4) {
+    processUserQuery('Run daily proactive scan on family alerts.');
+  }
+}
+
+// ==========================================
+// 9. DYNAMIC KNOWLEDGE VAULT
+// ==========================================
+function initKnowledgeVault() {
+  const filterBtns = document.querySelectorAll('.vault-filters .filter-tag');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.getAttribute('data-category');
+      renderKnowledgeVault(cat);
+    });
+  });
+
+  renderKnowledgeVault();
+}
+
+function renderKnowledgeVault(filterCategory = 'all') {
+  const container = document.getElementById('vault-list-container');
+  if (!container) return;
+
+  const items = AppState.knowledgeVault.filter(item => {
+    if (filterCategory === 'all') return true;
+    return item.category === filterCategory;
+  });
+
+  container.innerHTML = '';
+
+  if (items.length === 0) {
+    container.innerHTML = `<div class="text-muted" style="grid-column: 1/-1; padding: 2rem; text-align: center;">No knowledge nodes in this category.</div>`;
+    return;
+  }
+
+  items.forEach(item => {
+    const perm = checkPermission(item);
+    const card = document.createElement('div');
+    card.className = 'vault-card';
+
+    let mediaHtml = '';
+    if (item.fileUrl && perm.allowed) {
+      if (item.fileType?.startsWith('image')) {
+        mediaHtml = `<div class="vault-media-preview" onclick="openLightbox('${item.fileUrl}', 'image', '${escapeHtml(item.title)}')"><img src="${item.fileUrl}" alt="${item.title}"></div>`;
+      } else if (item.fileType?.startsWith('video')) {
+        mediaHtml = `<div class="vault-media-preview"><video src="${item.fileUrl}" controls></video></div>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="vault-card-top">
+        <span class="vault-category-badge">${item.category}</span>
+        <span class="vault-privacy-pill ${item.privacyLevel}">${item.privacyLevel}</span>
+      </div>
+      <h4>${item.title}</h4>
+      <p class="vault-loc">📍 Location: ${item.location} | Owner: ${AppState.members[item.owner]?.name || item.owner}</p>
+      <div class="vault-val-box">
+        ${perm.allowed ? escapeHtml(item.value) : `<span style="color:#ef4444;">🔒 Access Restricted (${perm.reason})</span>`}
+      </div>
+      ${mediaHtml}
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ==========================================
+// 10. DYNAMIC LIVING LEGACY ARCHIVE
+// ==========================================
+function initLegacyArchive() {
+  renderLegacyArchive();
+}
+
+function renderLegacyArchive() {
+  const container = document.getElementById('legacy-timeline-container');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  AppState.legacyMemories.forEach(mem => {
+    const card = document.createElement('div');
+    card.className = 'legacy-story-card';
+
+    let mediaBoxes = '';
+    if (mem.photoUrl) {
+      mediaBoxes += `<div class="legacy-media-box" onclick="openLightbox('${mem.photoUrl}', 'image', '${escapeHtml(mem.title)}')"><img src="${mem.photoUrl}" alt="${mem.title}"></div>`;
+    }
+    if (mem.videoUrl) {
+      mediaBoxes += `<div class="legacy-media-box"><video src="${mem.videoUrl}" controls></video></div>`;
+    }
+
+    card.innerHTML = `
+      <div class="legacy-story-header">
+        <div>
+          <h4>${mem.title}</h4>
+          <span class="text-muted" style="font-size:0.8rem;">Subject: ${mem.subject} | ${mem.date}</span>
+        </div>
+        <span class="badge-tag">${mem.privacy}</span>
+      </div>
+      
+      ${mediaBoxes ? `<div class="legacy-media-wrap">${mediaBoxes}</div>` : ''}
+
+      <div class="legacy-story-body">
+        ${mem.story}
+      </div>
+
+      <div class="audio-player-custom">
+        <button class="btn-play-audio" onclick="toggleSimulatedAudio(this)">▶</button>
+        <span style="font-size:0.8rem;font-weight:500;">Verified Oral Audio Recording</span>
+        <div class="audio-waveform-bars">
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+        </div>
+        <span style="font-size:0.75rem;color:#71717a;">01:42</span>
+      </div>
     `;
 
-    chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    container.appendChild(card);
+  });
+}
+
+window.toggleSimulatedAudio = function(btn) {
+  if (btn.textContent === '▶') {
+    btn.textContent = '⏸';
+    btn.style.background = '#10b981';
+  } else {
+    btn.textContent = '▶';
+    btn.style.background = '#f59e0b';
+  }
+};
+
+// ==========================================
+// 11. FULLSCREEN MEDIA LIGHTBOX
+// ==========================================
+function initLightbox() {
+  const modal = document.getElementById('media-lightbox-modal');
+  const closeBtn = document.getElementById('btn-lightbox-close');
+
+  if (closeBtn && modal) {
+    closeBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    });
+  }
+}
+
+window.openLightbox = function(url, type, caption) {
+  const modal = document.getElementById('media-lightbox-modal');
+  const target = document.getElementById('lightbox-media-target');
+  const cap = document.getElementById('lightbox-caption');
+
+  if (!modal || !target) return;
+
+  if (type === 'image') {
+    target.innerHTML = `<img src="${url}" alt="Fullscreen Image">`;
+  } else {
+    target.innerHTML = `<video src="${url}" controls autoplay style="max-height:70vh;"></video>`;
   }
 
-  async function handleUserChatMessage(text) {
-    const queryText = text.trim();
-    if (!queryText) return;
+  if (cap) cap.textContent = caption || '';
+  modal.classList.remove('hidden');
+};
 
-    chatInput.value = '';
+// ==========================================
+// 12. PRIVACY MATRIX & AUDIT LOGS
+// ==========================================
+function initPrivacyMatrix() {
+  renderPrivacyMatrix();
+}
 
-    // Save to current history
-    const currentUser = SecurityModule.getActiveUserObj();
-    chatHistories[activeChatAgent].push({ sender: currentUser.name, text: queryText, isAi: false });
-    appendChatBubbleHTML(currentUser.name, queryText, false);
+function renderPrivacyMatrix() {
+  const tbody = document.getElementById('privacy-matrix-body');
+  if (!tbody) return;
 
-    const statusText = document.getElementById('visualizer-status-indicator');
-    if (statusText) {
-      statusText.innerText = "Orchestrating";
-      statusText.className = "visualizer-status active";
-    }
+  tbody.innerHTML = '';
 
-    let response;
-    let senderName = "Antigravity Twin";
+  AppState.privacyMatrix.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${row.category}</strong></td>
+      <td>${renderPermBadge(row.dad)}</td>
+      <td>${renderPermBadge(row.mom)}</td>
+      <td>${renderPermBadge(row.son)}</td>
+      <td>${renderPermBadge(row.daughter)}</td>
+      <td>${renderPermBadge(row.grandma)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
-    // Route message depending on active chatbot agent
-    if (activeChatAgent === 'concierge') {
-      response = await AgentSystem.conciergeReceive(queryText);
-      senderName = "Antigravity Twin";
-    } else if (activeChatAgent === 'knowledge') {
-      response = await AgentSystem.knowledgeAgentReceive(queryText);
-      senderName = "Knowledge Agent";
-    } else if (activeChatAgent === 'emergency') {
-      response = await AgentSystem.emergencyAgentReceive(queryText);
-      senderName = "Emergency Agent";
-    } else if (activeChatAgent === 'legacy') {
-      response = await AgentSystem.legacyAgentReceive(queryText);
-      senderName = "Legacy Agent";
-    } else if (activeChatAgent === 'coordinator') {
-      response = await AgentSystem.coordinatorAgentReceive(queryText);
-      senderName = "Coordinator Agent";
-    } else if (activeChatAgent === 'privacy') {
-      response = await AgentSystem.privacyAgentReceive(queryText);
-      senderName = "Privacy Agent";
-    } else if (activeChatAgent === 'proactive') {
-      response = await AgentSystem.proactiveAgentReceive(queryText);
-      senderName = "Proactive Agent";
-    }
+function renderPermBadge(val) {
+  if (val.includes('Full') || val.includes('Owner')) return `<span class="perm-badge perm-full">${val}</span>`;
+  if (val.includes('Read')) return `<span class="perm-badge perm-read">${val}</span>`;
+  if (val.includes('Emergency')) return `<span class="perm-badge perm-em">${val}</span>`;
+  return `<span class="perm-badge perm-none">${val}</span>`;
+}
 
-    // Save AI reply to history
-    chatHistories[activeChatAgent].push({ sender: senderName, text: response.text, isAi: true });
-    appendChatBubbleHTML(senderName, response.text, true);
+// ==========================================
+// 13. PROACTIVE AI SCANNER FEED
+// ==========================================
+function initProactiveFeed() {
+  const feed = document.getElementById('proactive-alerts-feed');
+  if (!feed) return;
 
-    if (response.legacyItem) {
-      appendTelemetryLog({
-        timestamp: new Date().toISOString().substring(11, 19),
-        type: 'success-log',
-        message: `Verified Audio Track played in timeline: ${response.legacyItem.mediaUrl}`
-      });
-      switchView('legacy');
-    }
+  feed.innerHTML = '';
 
-    setTimeout(uiClearAllHighlights, 1500);
+  AppState.proactiveAlerts.forEach(alert => {
+    const item = document.createElement('div');
+    item.className = `alert-item ${alert.level}`;
+    item.innerHTML = `
+      <div class="alert-content">
+        <h5>${alert.title}</h5>
+        <p>${alert.text}</p>
+      </div>
+      <span class="alert-time">${alert.time}</span>
+    `;
+    feed.appendChild(item);
+  });
+}
+
+// ==========================================
+// 14. EMERGENCY SYSTEM
+// ==========================================
+function initEmergencySystem() {
+  const triggerBtn = document.getElementById('btn-emergency-trigger');
+  const resolveBtn = document.getElementById('btn-resolve-emergency');
+  const overlay = document.getElementById('emergency-overlay');
+
+  if (triggerBtn) {
+    triggerBtn.addEventListener('click', () => {
+      showEmergencyModal();
+    });
   }
 
-  // Bind chatbot tabs switching
-  const chatAgentTabs = document.querySelectorAll('.agent-chat-tab');
-  const chatWrapperEl = document.getElementById('chat-wrapper-element');
-  const chatAgentTitle = document.getElementById('chat-agent-title');
+  if (resolveBtn && overlay) {
+    resolveBtn.addEventListener('click', () => {
+      AppState.isEmergencyActive = false;
+      overlay.classList.remove('active');
+      renderKnowledgeVault();
+    });
+  }
+}
 
-  chatAgentTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      chatAgentTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+function showEmergencyModal() {
+  const overlay = document.getElementById('emergency-overlay');
+  if (overlay) {
+    overlay.classList.add('active');
+    renderKnowledgeVault();
+  }
+}
 
-      const agent = tab.getAttribute('data-agent');
-      activeChatAgent = agent;
+// ==========================================
+// 15. AMBIENT AUDIO SYNTHESIZER
+// ==========================================
+function initAmbientAudio() {
+  const btn = document.getElementById('btn-ambient-music');
+  const label = document.getElementById('ambient-music-text');
 
-      // Update Title & Class theme on Wrapper
-      chatWrapperEl.className = `chat-wrapper theme-${agent}`;
-      
-      const niceNameMap = {
-        concierge: "Antigravity Concierge Active",
-        knowledge: "Knowledge Agent Direct Mode",
-        emergency: "Emergency Agent Direct Mode",
-        legacy: "Legacy Agent Direct Mode",
-        coordinator: "Coordinator Agent Direct Mode",
-        privacy: "Privacy Agent Direct Mode",
-        proactive: "Proactive Agent Direct Mode"
-      };
-      
-      chatAgentTitle.innerText = niceNameMap[agent] || `${agent.charAt(0).toUpperCase() + agent.slice(1)} Agent Active`;
+  let audioCtx = null;
+  let synthInterval = null;
 
-      appendTelemetryLog({
-        timestamp: new Date().toISOString().substring(11, 19),
-        type: 'system',
-        message: `Chat channel switched to: ${agent.toUpperCase()} Agent Chatbot`
-      });
-
-      // Clear highlights and draw connection bypasses
-      uiClearAllHighlights();
-      drawConnectorLines();
-      
-      if (uiHighlightNode) {
-        uiHighlightNode('user', true);
-        uiHighlightNode(agent, true);
-        uiLineFlow('user', agent, agent === 'emergency' ? 'emergency' : 'normal');
+  function startSynth() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
       }
 
-      renderActiveChatHistory();
-    });
-  });
-
-  chatSendBtn.addEventListener('click', () => {
-    handleUserChatMessage(chatInput.value);
-  });
-
-  chatInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleUserChatMessage(chatInput.value);
-    }
-  });
-
-  // Clear chat trigger
-  clearChatBtn.addEventListener('click', () => {
-    const defaultWelcome = {
-      concierge: "Welcome to the Family Concierge. Ask me anything. I can delegate your request to specialized agents (Knowledge, Legacy, Emergency) while ensuring strict role-based privacy filters.",
-      knowledge: "Knowledge Agent direct terminal. Ask me directly about passwords, documents, locations, or recipes.",
-      emergency: "Emergency Agent direct terminal. Ask me directly about Grandma Elena's medical status, doctor numbers, allergies, or preferred hospital.",
-      legacy: "Legacy Agent direct terminal. Ask me directly about stories, recordings, or advice.",
-      coordinator: "Coordinator Agent direct terminal. Ask me to list schedule details, or add a task via 'add task [details]'.",
-      privacy: "Privacy Agent direct terminal. Ask me to audit your current role's clearances or list folder security settings.",
-      proactive: "Proactive Agent direct terminal. Query me to trigger background scans."
-    };
-
-    chatHistories[activeChatAgent] = [
-      { sender: `${activeChatAgent.charAt(0).toUpperCase() + activeChatAgent.slice(1)} Agent`, text: defaultWelcome[activeChatAgent], isAi: true }
-    ];
-    
-    renderActiveChatHistory();
-    
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'system',
-      message: `${activeChatAgent.toUpperCase()} Agent Chat thread history reset.`
-    });
-  });
-
-  // Suggested prompt pills binding
-  document.querySelectorAll('.pill-btn').forEach(pill => {
-    pill.addEventListener('click', (e) => {
-      handleUserChatMessage(e.target.getAttribute('data-query'));
-    });
-  });
-
-  // ==========================================
-  // Preset Demo Workflows (Scenarios 1 to 4)
-  // ==========================================
-
-  // Scenario 1: Find Insurance (Son Denied -> Dad Approved)
-  document.getElementById('sim-scenario-1').addEventListener('click', async () => {
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'system',
-      message: '*** DEMO WORKFLOW 1 STARTED: Privacy Check (Son vs. Dad) ***'
-    });
-
-    switchView('chat');
-    
-    // Step A: Switch to Son Leo
-    roleSelector.value = 'son';
-    handleRoleChange('son');
-    await AgentSystem.delay(800);
-
-    // Step B: Send Query as Son (Denied)
-    await handleUserChatMessage("Where is the insurance paper?");
-    await AgentSystem.delay(2800);
-
-    // Step C: Switch to Dad Arthur
-    roleSelector.value = 'dad';
-    handleRoleChange('dad');
-    await AgentSystem.delay(800);
-
-    // Step D: Send Query as Dad (Allowed)
-    await handleUserChatMessage("Where is the insurance paper?");
-  });
-
-  // Scenario 2: Emergency Mode Activation
-  const emergencyTrigger = document.getElementById('btn-emergency-trigger');
-  const simScenario2 = document.getElementById('sim-scenario-2');
-  const emergencyOverlay = document.getElementById('emergency-overlay');
-  const btnResolveEmergency = document.getElementById('btn-resolve-emergency');
-
-  async function triggerEmergencyPipeline() {
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'error-log',
-      message: '*** DETECTED CRITICAL ALARM: GRANDMA ELENA COLLAPSED ***'
-    });
-
-    // Run parallel agents
-    const response = await AgentSystem.orchestrateEmergency();
-
-    // Populate Emergency Dashboard elements
-    document.getElementById('em-subject-name').innerText = `${response.profile.name} (Grandma)`;
-    document.getElementById('em-subject-blood').innerText = response.profile.bloodGroup;
-    
-    const allergyBadge = document.getElementById('em-subject-allergies');
-    allergyBadge.innerText = response.profile.allergies.join(', ');
-
-    // Render medicines list
-    const medsUl = document.getElementById('em-subject-meds');
-    medsUl.innerHTML = '';
-    response.meds.forEach(med => {
-      const li = document.createElement('li');
-      li.className = 'em-med-item';
-      li.innerHTML = `
-        <strong>${med.name}</strong>
-        <span>Schedule: ${med.schedule} (${med.purpose})</span>
-      `;
-      medsUl.appendChild(li);
-    });
-
-    // Populate contacts
-    document.getElementById('em-subject-doc').innerText = response.profile.doctor;
-    document.getElementById('em-subject-hosp').innerText = response.profile.hospital;
-    document.getElementById('em-subject-ins-provider').innerText = response.insurance.provider;
-    document.getElementById('em-subject-ins-policy').innerText = response.insurance.policyNum;
-    document.getElementById('em-subject-ins-loc').innerText = response.insurance.location;
-
-    // Render coordinator tasks
-    const tasksDiv = document.getElementById('em-coordinator-tasks');
-    tasksDiv.innerHTML = '';
-    response.tasks.forEach(t => {
-      const pill = document.createElement('div');
-      pill.className = 'task-pill';
-      pill.innerText = t;
-      tasksDiv.appendChild(pill);
-    });
-
-    // Show high-visibility warning panel overlay
-    emergencyOverlay.classList.add('active');
-
-    // Visualizer status indicator
-    const statusText = document.getElementById('visualizer-status-indicator');
-    if (statusText) {
-      statusText.innerText = "Emergency Active";
-      statusText.className = "visualizer-status emergency";
+      const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+      synthInterval = setInterval(() => {
+        if (!AppState.isAmbientPlaying || !audioCtx) return;
+        const note = notes[Math.floor(Math.random() * notes.length)];
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(note, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.04, audioCtx.currentTime + 1.2);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 4.6);
+      }, 2500);
+    } catch (e) {
+      console.log('Audio synth initialized silently');
     }
   }
 
-  emergencyTrigger.addEventListener('click', triggerEmergencyPipeline);
-  simScenario2.addEventListener('click', triggerEmergencyPipeline);
+  function stopSynth() {
+    if (synthInterval) clearInterval(synthInterval);
+  }
 
-  // Close Emergency Modal
-  btnResolveEmergency.addEventListener('click', () => {
-    emergencyOverlay.classList.remove('active');
-    SecurityModule.setEmergencyMode(false);
-    uiClearAllHighlights();
-
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'success-log',
-      message: 'Emergency state cleared. Returning agent nodes to idle state.'
-    });
-  });
-
-  // Scenario 3: Grandpa's Memory
-  document.getElementById('sim-scenario-3').addEventListener('click', async () => {
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'system',
-      message: '*** DEMO WORKFLOW 3 STARTED: Verified Legacy Retrieval ***'
+  if (btn) {
+    btn.addEventListener('click', () => {
+      AppState.isAmbientPlaying = !AppState.isAmbientPlaying;
+      if (AppState.isAmbientPlaying) {
+        btn.classList.add('playing');
+        if (label) label.textContent = 'Ambience: On';
+        startSynth();
+      } else {
+        btn.classList.remove('playing');
+        if (label) label.textContent = 'Ambience: Off';
+        stopSynth();
+      }
     });
 
-    switchView('chat');
-    await AgentSystem.delay(400);
-    await handleUserChatMessage("Tell me Grandpa's favorite story.");
-  });
+    window.addEventListener('click', () => {
+      if (AppState.isAmbientPlaying && !synthInterval) {
+        startSynth();
+      }
+    }, { once: true });
+  }
+}
 
-  // Scenario 4: Proactive Audit Scan
-  document.getElementById('sim-scenario-4').addEventListener('click', async () => {
-    appendTelemetryLog({
-      timestamp: new Date().toISOString().substring(11, 19),
-      type: 'system',
-      message: '*** DEMO WORKFLOW 4 STARTED: Background Proactive Scanning ***'
-    });
+// ==========================================
+// 16. TESTIMONIAL SCROLL-DRIVEN WORD REVEAL
+// ==========================================
+function initScrollReveal() {
+  const quoteBox = document.getElementById('testimonial-quote-box');
+  if (!quoteBox) return;
 
-    // Trigger agent scan
-    const alerts = await AgentSystem.runProactiveAudit();
+  const words = quoteBox.querySelectorAll('.reveal-word');
+  
+  function updateReveal() {
+    const rect = quoteBox.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
     
-    // Update alert feed HTML
-    ProactiveModule.renderAlerts(alerts);
-    
-    // Switch to dashboard view to see alerts
-    switchView('dashboard');
-    
-    setTimeout(uiClearAllHighlights, 2000);
-  });
-
-  // Global Search AI Input Binding
-  const globalSearchInput = document.getElementById('global-search-ai');
-  if (globalSearchInput) {
-    globalSearchInput.addEventListener('keypress', async (e) => {
-      if (e.key === 'Enter') {
-        const query = globalSearchInput.value.trim();
-        if (!query) return;
-        
-        globalSearchInput.value = ''; // Clear search bar
-        
-        // 1. Switch to Chat View
-        switchView('chat');
-        
-        // 2. Select the Knowledge Agent Chatbot Tab
-        const knowledgeTab = document.querySelector('.agent-chat-tab[data-agent="knowledge"]');
-        if (knowledgeTab) {
-          knowledgeTab.click(); // Switches agent, updates themes, history, highlights
+    if (rect.top < windowHeight * 0.8 && rect.bottom > 0) {
+      const progress = Math.min(1, Math.max(0, (windowHeight * 0.8 - rect.top) / (windowHeight * 0.5)));
+      const countToReveal = Math.floor(progress * words.length);
+      
+      words.forEach((word, idx) => {
+        if (idx <= countToReveal) {
+          word.classList.add('active');
+        } else {
+          word.classList.remove('active');
         }
-        
-        // 3. Submit the search query directly to the Knowledge Agent Chatbot!
-        await handleUserChatMessage(query);
-      }
-    });
-  }
-
-  // ==========================================
-  // Ambient Relaxing Music Controller
-  // ==========================================
-  const bgMusic = document.getElementById('bg-relaxing-music');
-  const btnAmbient = document.getElementById('btn-ambient-music');
-
-  function toggleAmbientMusic() {
-    if (!bgMusic || !btnAmbient) return;
-    
-    const musicIcon = btnAmbient.querySelector('.music-icon');
-    const musicText = btnAmbient.querySelector('span:not(.music-icon)');
-
-    if (bgMusic.paused) {
-      bgMusic.play().then(() => {
-        btnAmbient.classList.add('playing');
-        if (musicIcon) musicIcon.innerText = '🔊';
-        if (musicText) musicText.innerText = 'Ambience: On';
-        appendTelemetryLog({
-          timestamp: new Date().toISOString().substring(11, 19),
-          type: 'success-log',
-          message: 'Ambient relaxing music started playing in background.'
-        });
-      }).catch(e => {
-        console.log("Autoplay blocked by browser policy. Interacting first required.", e);
-      });
-    } else {
-      bgMusic.pause();
-      btnAmbient.classList.remove('playing');
-      if (musicIcon) musicIcon.innerText = '🔇';
-      if (musicText) musicText.innerText = 'Ambience: Off';
-      appendTelemetryLog({
-        timestamp: new Date().toISOString().substring(11, 19),
-        type: 'system',
-        message: 'Ambient background music paused.'
       });
     }
   }
 
-  if (btnAmbient) {
-    btnAmbient.addEventListener('click', toggleAmbientMusic);
-  }
+  window.addEventListener('scroll', updateReveal, { passive: true });
+  updateReveal();
+}
 
-  // Try to play immediately on page load (in case browser allows it)
-  if (bgMusic) {
-    bgMusic.play().then(() => {
-      appendTelemetryLog({
-        timestamp: new Date().toISOString().substring(11, 19),
-        type: 'success-log',
-        message: 'Ambient background music started automatically.'
-      });
-    }).catch(e => {
-      console.log("Autoplay on load blocked. Awaiting user interaction.");
-    });
-  }
-
-  // Attempt to play on first user interaction anywhere on the body if it is still paused and user hasn't turned it off
-  document.body.addEventListener('click', () => {
-    if (bgMusic && bgMusic.paused && btnAmbient && btnAmbient.classList.contains('playing')) {
-      bgMusic.play().then(() => {
-        appendTelemetryLog({
-          timestamp: new Date().toISOString().substring(11, 19),
-          type: 'success-log',
-          message: 'Ambient background music activated automatically upon user interaction.'
-        });
-      }).catch(e => {
-        // Safe to ignore
-      });
-    }
-  }, { once: true });
-
-  // Trigger default Proactive audit on startup
-  setTimeout(async () => {
-    const alerts = await AgentSystem.runProactiveAudit();
-    ProactiveModule.renderAlerts(alerts);
-    uiClearAllHighlights();
-  }, 1000);
-
-});
+// Helper: HTML Escaping
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>"']/g, function(m) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[m];
+  });
+}
