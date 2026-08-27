@@ -1,5 +1,5 @@
 /**
- * Family Concierge AI - Main Application Setup & Event Controllers
+ * Family Concierge AI & Lumora - Main Application Setup & Event Controllers
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initAmbientAudio();
   initLightbox();
 
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+
   // Initial Renders
   renderVaultList();
   if (window.LegacyModule) LegacyModule.renderTimeline();
@@ -22,17 +26,119 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 1. HERO LANDING PAGE TRANSITIONS
+// 1. LUMORA HERO LANDING & VIDEO CONTROLLER
 // ==========================================
+let activeVideoIndex = 0;
+let isVideoTransitioning = false;
+
 function initHeroLanding() {
   const heroPage = document.getElementById('hero-landing-page');
   const appContainer = document.getElementById('app-container');
+  const heroCenterBox = document.getElementById('hero-center-box');
+  const heroSwitcherBtns = document.querySelectorAll('#hero-video-switcher .vid-tab-btn');
+  const dashPickerDots = document.querySelectorAll('#dashboard-video-picker .dash-theme-dot');
+  const heroVideos = document.querySelectorAll('#hero-video-stack .video-layer-item');
+  const dashVideos = document.querySelectorAll('#dashboard-video-stack .dashboard-vid-item');
+  const mobileMenuBtn = document.getElementById('btn-mobile-menu-toggle');
+  const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+  const emailForm = document.getElementById('hero-email-form');
+
+  function switchActiveVideo(index) {
+    if (index === activeVideoIndex || isVideoTransitioning) return;
+    isVideoTransitioning = true;
+    activeVideoIndex = index;
+
+    // Update Hero Stack
+    heroVideos.forEach((vid, idx) => {
+      vid.classList.toggle('active', idx === index);
+    });
+
+    // Update Dashboard Stack
+    dashVideos.forEach((vid, idx) => {
+      vid.classList.toggle('active', idx === index);
+    });
+
+    // Update Hero Tab Buttons
+    heroSwitcherBtns.forEach((btn, idx) => {
+      btn.classList.toggle('active', idx === index);
+    });
+
+    // Update Dashboard Picker Dots
+    dashPickerDots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === index);
+    });
+
+    // Dark Mode Transition for "Deep Woods" (3rd video, index 2) -> #182C41
+    if (heroCenterBox) {
+      if (index === 2) {
+        heroCenterBox.classList.add('deep-woods-mode');
+      } else {
+        heroCenterBox.classList.remove('deep-woods-mode');
+      }
+    }
+
+    // 1000ms cooldown matching the crossfade duration
+    setTimeout(() => {
+      isVideoTransitioning = false;
+    }, 1000);
+  }
+
+  // Hero Video Switcher Click Events
+  heroSwitcherBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-index'), 10);
+      switchActiveVideo(idx);
+    });
+  });
+
+  // Dashboard Video Theme Dots Click Events
+  dashPickerDots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(dot.getAttribute('data-index'), 10);
+      switchActiveVideo(idx);
+    });
+  });
+
+  // Mobile Menu Toggle
+  if (mobileMenuBtn && mobileMenuOverlay) {
+    mobileMenuBtn.addEventListener('click', () => {
+      const isOpen = mobileMenuBtn.classList.toggle('mobile-menu-active');
+      mobileMenuOverlay.classList.toggle('hidden', !isOpen);
+      if (window.lucide) window.lucide.createIcons();
+    });
+
+    // Close on link click
+    mobileMenuOverlay.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenuBtn.classList.remove('mobile-menu-active');
+        mobileMenuOverlay.classList.add('hidden');
+      });
+    });
+  }
+
+  // Email Early Access Form
+  if (emailForm) {
+    emailForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('hero-email-input');
+      const emailVal = input ? input.value : '';
+      alert(`✨ Welcome to Lumora! Early access link sent to: ${emailVal || 'your email'}`);
+      enterVault();
+    });
+  }
 
   function enterVault() {
     if (heroPage && appContainer) {
       heroPage.classList.add('hidden');
       appContainer.classList.remove('hidden');
+      if (mobileMenuOverlay) mobileMenuOverlay.classList.add('hidden');
+      if (mobileMenuBtn) mobileMenuBtn.classList.remove('mobile-menu-active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Start ambient audio automatically on user entry
+      if (window.startAmbientMusic) window.startAmbientMusic();
     }
   }
 
@@ -44,10 +150,13 @@ function initHeroLanding() {
     }
   }
 
-  document.getElementById('btn-enter-vault-main')?.addEventListener('click', enterVault);
   document.getElementById('btn-capsule-enter')?.addEventListener('click', enterVault);
+  document.getElementById('btn-mobile-get-started')?.addEventListener('click', enterVault);
   document.getElementById('btn-return-landing')?.addEventListener('click', returnToHero);
   document.getElementById('sidebar-logo-brand')?.addEventListener('click', returnToHero);
+  document.getElementById('lumora-logo-brand')?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 }
 
 // ==========================================
@@ -108,7 +217,6 @@ function initRoleSwitcher() {
     if (window.LegacyModule) LegacyModule.renderTimeline();
   });
 
-  // Clicking on family cards switches role
   document.querySelectorAll('.family-card').forEach(card => {
     card.addEventListener('click', () => {
       const role = card.getAttribute('data-role');
@@ -193,7 +301,6 @@ function initChatSystem() {
     });
   }
 
-  // Suggested Pills
   document.querySelectorAll('.pill-btn').forEach(pill => {
     pill.addEventListener('click', () => {
       const query = pill.getAttribute('data-query');
@@ -201,7 +308,6 @@ function initChatSystem() {
     });
   });
 
-  // Global Search AI
   if (globalSearch) {
     globalSearch.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -215,7 +321,6 @@ function initChatSystem() {
     });
   }
 
-  // Simulation Controller Buttons
   document.getElementById('sim-scenario-1')?.addEventListener('click', () => {
     switchView('chat');
     sendChatMessage('Where are the house insurance papers?');
@@ -240,17 +345,15 @@ async function sendChatMessage(query) {
 
   const currentUser = SecurityModule.getActiveUserObj();
 
-  // User Message Bubble
   const userMsg = document.createElement('div');
   userMsg.className = 'message user-msg';
   userMsg.innerHTML = `<strong>${currentUser.name}:</strong> ${escapeHtml(query)}`;
   container.appendChild(userMsg);
   container.scrollTop = container.scrollHeight;
 
-  // Typing Bubble
   const botMsg = document.createElement('div');
   botMsg.className = 'message bot-msg';
-  botMsg.innerHTML = `<em>Antigravity AI is delegating to specialized agents...</em>`;
+  botMsg.innerHTML = `<em>Antigravity AI is querying specialized agents...</em>`;
   container.appendChild(botMsg);
   container.scrollTop = container.scrollHeight;
 
@@ -297,7 +400,6 @@ function initVault() {
     });
   });
 
-  // Knowledge File Upload
   const fileInput = document.getElementById('new-item-file');
   const preview = document.getElementById('new-item-preview');
   let uploadedDataUrl = null;
@@ -324,7 +426,6 @@ function initVault() {
     });
   }
 
-  // Save Node
   const saveBtn = document.getElementById('btn-save-vault-item');
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
@@ -365,7 +466,6 @@ function initVault() {
     });
   }
 
-  // Quick Dropzone in Dashboard
   const quickInput = document.getElementById('quick-file-input');
   const quickDropzone = document.getElementById('quick-upload-dropzone');
   const quickPreviewArea = document.getElementById('quick-upload-preview-area');
@@ -443,10 +543,10 @@ function renderVaultList() {
 
     let mediaHtml = '';
     if (item.fileUrl && perm.allowed) {
-      if (item.fileType?.startsWith('image')) {
+      if (item.fileType?.startsWith('image') || item.fileUrl.includes('unsplash') || item.fileUrl.endsWith('.jpg') || item.fileUrl.endsWith('.png')) {
         mediaHtml = `<div class="vault-media-preview" onclick="openLightbox('${item.fileUrl}', 'image', '${escapeHtml(item.title)}')"><img src="${item.fileUrl}" alt="${item.title}"></div>`;
-      } else if (item.fileType?.startsWith('video')) {
-        mediaHtml = `<div class="vault-media-preview"><video src="${item.fileUrl}" controls></video></div>`;
+      } else if (item.fileType?.startsWith('video') || item.fileUrl.endsWith('.mp4') || item.fileUrl.endsWith('.webm')) {
+        mediaHtml = `<div class="vault-media-preview"><video src="${item.fileUrl}" controls style="max-height:180px;width:100%;"></video></div>`;
       }
     }
 
@@ -602,54 +702,124 @@ function initProactive() {
 }
 
 // ==========================================
-// 10. AMBIENT AUDIO SYNTHESIZER
+// 10. AMBIENT AUDIO SYNTHESIZER (Audible & Rich)
 // ==========================================
+let globalAudioCtx = null;
+let ambientSynthInterval = null;
+let isAmbientPlaying = true;
+
 function initAmbientAudio() {
-  const btn = document.getElementById('btn-ambient-music');
-  const label = document.getElementById('ambient-label');
-  let isPlaying = true;
-  let audioCtx = null;
-  let synthInterval = null;
+  const dashBtn = document.getElementById('btn-ambient-music');
+  const dashLabel = document.getElementById('ambient-label');
+  const heroBtn = document.getElementById('btn-hero-ambience');
+  const heroText = heroBtn ? heroBtn.querySelector('.ambience-text') : null;
+  const audioTag = document.getElementById('bg-relaxing-music');
 
-  function startSynth() {
+  function updateUi(isPlaying) {
+    if (dashBtn) dashBtn.classList.toggle('playing', isPlaying);
+    if (dashLabel) dashLabel.textContent = isPlaying ? 'Ambience: On' : 'Ambience: Off';
+    if (heroBtn) heroBtn.classList.toggle('playing', isPlaying);
+    if (heroText) heroText.textContent = isPlaying ? 'Ambience: On' : 'Ambience: Off';
+    const heroIcon = heroBtn ? heroBtn.querySelector('.music-icon') : null;
+    const dashIcon = dashBtn ? dashBtn.querySelector('.music-icon') : null;
+    if (heroIcon) heroIcon.textContent = isPlaying ? '🔊' : '🔇';
+    if (dashIcon) dashIcon.textContent = isPlaying ? '🔊' : '🔇';
+  }
+
+  window.startAmbientMusic = function() {
+    isAmbientPlaying = true;
+    updateUi(true);
+    if (audioTag) {
+      audioTag.play().catch(() => {
+        // Fallback to Web Audio synthesized harmonies
+        startSynthEngine();
+      });
+    }
+    startSynthEngine();
+  };
+
+  window.stopAmbientMusic = function() {
+    isAmbientPlaying = false;
+    updateUi(false);
+    if (audioTag) audioTag.pause();
+    if (ambientSynthInterval) clearInterval(ambientSynthInterval);
+  };
+
+  function toggleMusic() {
+    if (isAmbientPlaying) {
+      window.stopAmbientMusic();
+    } else {
+      window.startAmbientMusic();
+    }
+  }
+
+  if (dashBtn) dashBtn.addEventListener('click', toggleMusic);
+  if (heroBtn) heroBtn.addEventListener('click', toggleMusic);
+
+  // Auto-resume audio on first user click anywhere
+  window.addEventListener('click', () => {
+    if (isAmbientPlaying && !ambientSynthInterval) {
+      if (audioTag && audioTag.paused) {
+        audioTag.play().catch(() => {});
+      }
+      startSynthEngine();
+    }
+  }, { once: true });
+
+  function startSynthEngine() {
     try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (!globalAudioCtx) {
+        globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (globalAudioCtx.state === 'suspended') {
+        globalAudioCtx.resume();
+      }
 
-      const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
-      synthInterval = setInterval(() => {
-        if (!isPlaying || !audioCtx) return;
-        const note = notes[Math.floor(Math.random() * notes.length)];
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(note, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.04, audioCtx.currentTime + 1.2);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.5);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 4.6);
-      }, 2500);
-    } catch (e) {}
-  }
+      if (ambientSynthInterval) clearInterval(ambientSynthInterval);
 
-  function stopSynth() {
-    if (synthInterval) clearInterval(synthInterval);
-  }
+      // Harmonious chord progression: Cmaj9 -> Am9 -> Fmaj7 -> Gsus4
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88], // C, E, G, B
+        [220.00, 261.63, 329.63, 392.00], // A, C, E, G
+        [174.61, 220.00, 261.63, 329.63], // F, A, C, E
+        [196.00, 261.63, 293.66, 392.00]  // G, C, D, G
+      ];
 
-  if (btn) {
-    btn.addEventListener('click', () => {
-      isPlaying = !isPlaying;
-      btn.classList.toggle('playing', isPlaying);
-      if (label) label.textContent = isPlaying ? 'Ambience: On' : 'Ambience: Off';
-      if (isPlaying) startSynth(); else stopSynth();
-    });
+      let chordIdx = 0;
+      function playNextChord() {
+        if (!isAmbientPlaying || !globalAudioCtx) return;
+        const currentChord = chords[chordIdx % chords.length];
+        chordIdx++;
 
-    window.addEventListener('click', () => {
-      if (isPlaying && !synthInterval) startSynth();
-    }, { once: true });
+        currentChord.forEach((note, i) => {
+          const osc = globalAudioCtx.createOscillator();
+          const gain = globalAudioCtx.createGain();
+          const filter = globalAudioCtx.createBiquadFilter();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(note, globalAudioCtx.currentTime + i * 0.1);
+
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(800, globalAudioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0.001, globalAudioCtx.currentTime + i * 0.1);
+          gain.gain.linearRampToValueAtTime(0.08, globalAudioCtx.currentTime + i * 0.1 + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.0001, globalAudioCtx.currentTime + i * 0.1 + 5.5);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(globalAudioCtx.destination);
+
+          osc.start(globalAudioCtx.currentTime + i * 0.1);
+          osc.stop(globalAudioCtx.currentTime + i * 0.1 + 5.8);
+        });
+      }
+
+      playNextChord();
+      ambientSynthInterval = setInterval(playNextChord, 4500);
+    } catch (e) {
+      console.log('Synth start');
+    }
   }
 }
 

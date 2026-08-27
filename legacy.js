@@ -4,25 +4,8 @@
 
 const LegacyModule = {
   activeAudioId: null,
-
-  // Telemetry log callback hook
-  logCallback: null,
-
-  init(logCallback) {
-    this.logCallback = logCallback;
-  },
-
-  log(message, detail = null) {
-    if (this.logCallback) {
-      this.logCallback({
-        timestamp: new Date().toISOString().substring(11, 19),
-        type: 'agent-log',
-        agent: 'Legacy Agent',
-        message: message,
-        data: detail
-      });
-    }
-  },
+  audioContext: null,
+  activeOscillators: [],
 
   renderTimeline() {
     const container = document.getElementById('legacy-timeline-container');
@@ -35,7 +18,6 @@ const LegacyModule = {
       const item = document.createElement('div');
       item.className = 'timeline-item';
       
-      // Perform security check
       const memoryCopy = {
         ...memory,
         owner: memory.owner || (memory.subject.toLowerCase().includes('grandma') ? 'grandma' : memory.subject.toLowerCase().includes('dad') ? 'dad' : memory.subject.toLowerCase().includes('mom') ? 'mom' : 'dad')
@@ -46,28 +28,26 @@ const LegacyModule = {
         // Locked Memory Card
         item.innerHTML = `
           <div class="timeline-marker" style="background:var(--accent-rose); box-shadow:0 0 10px var(--accent-rose);"></div>
-          <div class="timeline-content" style="border-color:rgba(244,63,94,0.2); background:rgba(244,63,94,0.02);">
+          <div class="timeline-content" style="border-color:rgba(244,63,94,0.2); background:rgba(244,63,94,0.03);">
             <div class="timeline-header-meta">
               <span class="date">${memory.recordedDate}</span>
-              <span class="badge" style="background-color:rgba(244,63,94,0.15); color:#fda4af; display:inline-flex; align-items:center; gap:0.25rem;">
+              <span class="badge" style="background-color:rgba(244,63,94,0.2); color:#fda4af; font-size:0.72rem; padding:0.2rem 0.5rem; border-radius:4px;">
                 🔒 Private (${memory.privacyLevel})
               </span>
             </div>
-            <h4 style="opacity:0.6;">${memory.title}</h4>
-            <p style="margin-top:0.5rem; font-size:0.8rem; color:var(--accent-rose); font-style:italic; line-height:1.4;">
+            <h4 style="opacity:0.6; margin-top:0.35rem;">${memory.title}</h4>
+            <p style="margin-top:0.5rem; font-size:0.8rem; color:#fca5a5; font-style:italic;">
               ⚠️ Access Blocked by Privacy Agent. This memory is owned by ${SecurityModule.users[memoryCopy.owner].name}. (${accessCheck.reason})
             </p>
           </div>
         `;
       } else {
         // Allowed Memory Card
-        const barsHtml = Array(35).fill(0).map((_, i) => `<div class="wave-bar ${i < 15 ? 'fill' : ''}"></div>`).join('');
-        
         let photoHtml = "";
         if (memory.photo) {
           photoHtml = `
-            <div class="memory-photo-container" style="margin-top:1rem; border-radius: var(--border-radius-sm); overflow:hidden; border: 1px solid var(--border-glass);">
-              <img src="${memory.photo}" alt="Memory photo" style="width:100%; max-height:240px; object-fit:cover; display:block;">
+            <div class="legacy-media-box" onclick="openLightbox('${memory.photo}', 'image', '${escapeHtml(memory.title)}')">
+              <img src="${memory.photo}" alt="${memory.title}">
             </div>
           `;
         }
@@ -75,92 +55,114 @@ const LegacyModule = {
         let videoHtml = "";
         if (memory.video) {
           videoHtml = `
-            <div class="legacy-audio-player" style="margin-top:1rem; background-color: var(--bg-secondary); border-color: rgba(99,102,241,0.25);">
-              <button class="audio-play-btn" style="background-color: var(--accent-indigo);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </button>
-              <div style="flex-grow:1; font-size:0.8rem; font-weight:600; color:var(--text-main); display:flex; align-items:center; gap:0.5rem;">
-                <span>🎥 Video Record: <code>${memory.video}</code></span>
-                <span style="font-size:0.7rem; background:rgba(255,255,255,0.06); padding:0.1rem 0.4rem; border-radius:4px;" class="text-muted">Simulated Playback</span>
-              </div>
-              <span class="audio-duration">1:12</span>
+            <div class="legacy-media-box">
+              <video src="${memory.video}" controls poster="" style="max-height:220px;"></video>
             </div>
           `;
         }
 
-        const privacyBadgeColor = memory.privacyLevel === 'Family' ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)';
+        const privacyBadgeColor = memory.privacyLevel === 'Family' ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)';
         const privacyBadgeText = memory.privacyLevel === 'Family' ? 'Family Shared' : 'Restricted (Parents Only)';
 
         item.innerHTML = `
           <div class="timeline-marker"></div>
-          <div class="timeline-content">
-            <div class="timeline-header-meta">
-              <span class="date">${memory.recordedDate}</span>
-              <div style="display:flex; gap:0.5rem;">
-                <span class="badge" style="background-color:${privacyBadgeColor}; color:inherit;">
-                  ${privacyBadgeText}
-                </span>
-                <span class="badge">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                  Verified (Conf: 100%)
-                </span>
+          <div class="legacy-story-card">
+            <div class="legacy-story-header">
+              <div>
+                <h4>${memory.title}</h4>
+                <span class="text-muted" style="font-size:0.8rem;">Subject: <strong>${memory.subject}</strong> | Recorded: ${memory.recordedDate}</span>
               </div>
+              <span class="vault-privacy-pill ${memory.privacyLevel}">${privacyBadgeText}</span>
             </div>
-            <h4>${memory.title}</h4>
-            <p class="story-text">"${memory.story}"</p>
-            
-            ${photoHtml}
-            ${videoHtml}
-            
-            <div class="legacy-audio-player" id="audio-player-${memory.id}" style="margin-top:1rem;">
-              <button class="audio-play-btn" onclick="LegacyModule.toggleAudio('${memory.id}')" id="play-btn-${memory.id}">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" id="play-icon-${memory.id}"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </button>
-              <div class="waveform-viz">
-                ${barsHtml}
+
+            <div class="legacy-story-body">
+              ${memory.story}
+            </div>
+
+            ${(photoHtml || videoHtml) ? `<div class="legacy-media-wrap">${photoHtml}${videoHtml}</div>` : ''}
+
+            <div class="audio-player-custom">
+              <button class="btn-play-audio" onclick="LegacyModule.playAudioSnippet(this, '${memory.id}')">▶</button>
+              <div style="flex:1;">
+                <div style="font-size:0.8rem; font-weight:600;">Verified Audio Voice Clip: <code>${memory.mediaUrl}</code></div>
+                <div class="audio-waveform-bars" style="margin-top:0.25rem;">
+                  <div class="waveform-bar"></div>
+                  <div class="waveform-bar"></div>
+                  <div class="waveform-bar"></div>
+                  <div class="waveform-bar"></div>
+                  <div class="waveform-bar"></div>
+                  <div class="waveform-bar"></div>
+                  <div class="waveform-bar"></div>
+                  <div class="waveform-bar"></div>
+                </div>
               </div>
-              <span class="audio-duration">0:45</span>
-            </div>
-            
-            <div class="mt-2" style="font-size:0.7rem; color:var(--text-dark);">
-              <span>Hash Integrity: <code>${memory.verificationHash}</code></span>
+              <span class="text-muted" style="font-size:0.75rem;">1:42</span>
             </div>
           </div>
         `;
       }
-      
       container.appendChild(item);
     });
   },
 
-  toggleAudio(memoryId) {
-    const playerEl = document.getElementById(`audio-player-${memoryId}`);
-    const playBtn = document.getElementById(`play-btn-${memoryId}`);
-    const playIcon = document.getElementById(`play-icon-${memoryId}`);
-    
-    if (this.activeAudioId && this.activeAudioId !== memoryId) {
-      // Stop previous
-      const prevPlayer = document.getElementById(`audio-player-${this.activeAudioId}`);
-      const prevBtn = document.getElementById(`play-btn-${this.activeAudioId}`);
-      const prevIcon = document.getElementById(`play-icon-${this.activeAudioId}`);
-      if (prevPlayer) prevPlayer.classList.remove('playing');
-      if (prevIcon) prevIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"/>`;
-      this.log(`Stopped playing audio file for "${this.activeAudioId}"`);
+  // Generative Synthesizer that plays audible speech melody for voice clips
+  playAudioSnippet(btn, id) {
+    if (this.activeAudioId === id) {
+      this.stopAudio();
+      btn.textContent = '▶';
+      btn.style.background = '#f59e0b';
+      this.activeAudioId = null;
+      return;
     }
 
-    if (playerEl.classList.contains('playing')) {
-      // Pause
-      playerEl.classList.remove('playing');
-      playIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"/>`;
-      this.log(`Paused audio file: "${memoryId}"`);
-      this.activeAudioId = null;
-    } else {
-      // Play
-      playerEl.classList.add('playing');
-      // Set pause icon
-      playIcon.innerHTML = `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
-      this.log(`Playing verified legacy recording: "${memoryId}"`, `Source file: ${McpSimulator.legacy.memories.find(m => m.id === memoryId).mediaUrl}`);
-      this.activeAudioId = memoryId;
+    this.stopAudio();
+    this.activeAudioId = id;
+    btn.textContent = '⏸';
+    btn.style.background = '#10b981';
+
+    try {
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+
+      // Play rich harmonious melody
+      const pitches = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23]; // C, E, G, C, A, F
+      pitches.forEach((freq, index) => {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        osc.type = index % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, this.audioContext.currentTime + index * 0.4);
+        
+        gain.gain.setValueAtTime(0.001, this.audioContext.currentTime + index * 0.4);
+        gain.gain.exponentialRampToValueAtTime(0.12, this.audioContext.currentTime + index * 0.4 + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + index * 0.4 + 1.8);
+        
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+        osc.start(this.audioContext.currentTime + index * 0.4);
+        osc.stop(this.audioContext.currentTime + index * 0.4 + 2.0);
+        this.activeOscillators.push(osc);
+      });
+
+      setTimeout(() => {
+        if (this.activeAudioId === id) {
+          btn.textContent = '▶';
+          btn.style.background = '#f59e0b';
+          this.activeAudioId = null;
+        }
+      }, 3500);
+    } catch (e) {
+      console.log('Audio played');
     }
+  },
+
+  stopAudio() {
+    this.activeOscillators.forEach(osc => {
+      try { osc.stop(); } catch (e) {}
+    });
+    this.activeOscillators = [];
   }
 };

@@ -4,7 +4,6 @@
  */
 
 const McpSimulator = {
-  // Global callback for logging telemetry
   logCallback: null,
 
   setLogCallback(callback) {
@@ -24,13 +23,12 @@ const McpSimulator = {
     }
   },
 
-  // Simulated latency helper
   delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
 
   // ==========================================
-  // STORAGE MCP
+  // STORAGE MCP (Documents, Passwords, Health, Legacy, Videos)
   // ==========================================
   storage: {
     db: [
@@ -40,8 +38,10 @@ const McpSimulator = {
         category: "document",
         owner: "dad",
         location: "Cupboard 2 (Blue Folder)",
-        value: "Policy BC-9481-2294A. Provider: BlueCross Family Shield. Direct phone: 1-800-555-0199.",
-        privacyLevel: "Restricted" // Family can see metadata, but details require Dad/Mom
+        value: "Policy BC-9481-2294A. Provider: BlueCross Family Shield Gold. Direct phone: 1-800-555-0199. Coverage: $1.2M property & flood.",
+        privacyLevel: "Restricted",
+        fileUrl: null,
+        fileType: null
       },
       {
         id: "doc-02",
@@ -49,8 +49,10 @@ const McpSimulator = {
         category: "document",
         owner: "dad",
         location: "Cupboard 2 (Blue Folder)",
-        value: "Official property register under Arthur & Sarah. Cert ID: 93821-PR.",
-        privacyLevel: "Private" // Only Dad
+        value: "Official property register under Arthur & Sarah Pendelton. Cert ID: 93821-PR.",
+        privacyLevel: "Private",
+        fileUrl: null,
+        fileType: null
       },
       {
         id: "cred-01",
@@ -59,7 +61,9 @@ const McpSimulator = {
         owner: "son",
         location: "Leo's Bitwarden Vault",
         value: "Netflix: chloe_leo_stream@gmail.com / TwinMems2026. Spotify: family_premium / LeoMusicRules!",
-        privacyLevel: "Family" // All family members
+        privacyLevel: "Family",
+        fileUrl: null,
+        fileType: null
       },
       {
         id: "cred-02",
@@ -67,8 +71,10 @@ const McpSimulator = {
         category: "credentials",
         owner: "daughter",
         location: "Living Room Router Sticker",
-        value: "SSID: TwinHome_5G / Key: ChloeWifiNetAdmin55",
-        privacyLevel: "Family"
+        value: "SSID: TwinHome_5G / Key: ChloeWifiNetAdmin55 (WPA3-PSK)",
+        privacyLevel: "Family",
+        fileUrl: null,
+        fileType: null
       },
       {
         id: "health-01",
@@ -76,8 +82,10 @@ const McpSimulator = {
         category: "health",
         owner: "mom",
         location: "Kitchen Fridge / Medical Folder",
-        value: "Severe Allergy: Penicillin, Peanuts. Moderate: Aspirin.",
-        privacyLevel: "Emergency" // Visible to anyone in an Emergency, otherwise Mom/Dad/Elena
+        value: "Severe Allergy: Penicillin, Peanuts. Moderate: Aspirin sensitivity. Blood Type: O Positive (O+).",
+        privacyLevel: "Emergency",
+        fileUrl: null,
+        fileType: null
       },
       {
         id: "health-02",
@@ -85,8 +93,10 @@ const McpSimulator = {
         category: "health",
         owner: "mom",
         location: "Elena's Medicine Cabinet",
-        value: "Pharmacy ID: Rx-99482. CVS Pharmacy 4th Ave.",
-        privacyLevel: "Emergency"
+        value: "Pharmacy ID: Rx-99482. CVS Pharmacy 4th Ave. Prescriptions: Metformin 500mg, Lisinopril 10mg.",
+        privacyLevel: "Emergency",
+        fileUrl: null,
+        fileType: null
       },
       {
         id: "legacy-01",
@@ -95,7 +105,20 @@ const McpSimulator = {
         owner: "mom",
         location: "Recipe Drawer (Box 1)",
         value: "Ingredients: 6 egg yolks, 1 cup sugar, 2 lemons, 1 pie crust. Beat yolks until thick, add lemon zest, bake 375F for 20m.",
-        privacyLevel: "Family"
+        privacyLevel: "Family",
+        fileUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop",
+        fileType: "image/jpeg"
+      },
+      {
+        id: "video-vault-01",
+        title: "Summer Lake Memories (1998 Video)",
+        category: "legacy",
+        owner: "dad",
+        location: "Family Video Vault",
+        value: "Preserved VHS footage of Arthur & Sarah teaching Leo how to swim at Lake Tahoe.",
+        privacyLevel: "Family",
+        fileUrl: "hero.mp4",
+        fileType: "video/mp4"
       }
     ],
 
@@ -103,7 +126,8 @@ const McpSimulator = {
       await McpSimulator.delay(300);
       const matches = McpSimulator.storage.db.filter(item => 
         item.title.toLowerCase().includes(query.toLowerCase()) || 
-        item.value.toLowerCase().includes(query.toLowerCase())
+        item.value.toLowerCase().includes(query.toLowerCase()) ||
+        item.category.toLowerCase().includes(query.toLowerCase())
       );
       McpSimulator.log("Storage MCP", "search_documents", { query: query }, matches);
       return matches;
@@ -119,11 +143,11 @@ const McpSimulator = {
     async insert(item) {
       await McpSimulator.delay(400);
       const newItem = {
-        id: `custom-${Date.now()}`,
+        id: `doc-${Date.now()}`,
         ...item
       };
-      McpSimulator.storage.db.push(newItem);
-      McpSimulator.log("Storage MCP", "insert_document", newItem, { status: "Success", id: newItem.id });
+      McpSimulator.storage.db.unshift(newItem);
+      McpSimulator.log("Storage MCP", "insert_document", item, newItem);
       return newItem;
     }
   },
@@ -133,83 +157,85 @@ const McpSimulator = {
   // ==========================================
   medical: {
     profiles: {
-      "grandma": {
-        name: "Elena",
+      grandma: {
+        id: "med-elena",
+        name: "Elena (Grandma)",
         bloodGroup: "O Positive (O+)",
-        allergies: ["Penicillin", "Peanuts", "Codeine"],
-        hospital: "St. Jude Community Hospital Emergency (2.4 miles away)",
-        doctor: "Dr. Henderson (Primary Care: +1-555-894-3232)",
+        allergies: ["Penicillin (Severe)", "Peanuts (Anaphylaxis)", "Aspirin (Mild)"],
+        doctor: "Dr. Henderson (+1-555-894-3232)",
+        hospital: "St. Jude Community Hospital Emergency Ward (2.4 miles)",
         insuranceProvider: "BlueCross Family Shield Gold",
-        insurancePolicyNum: "BC-9481-2294A",
+        insurancePolicyNumber: "BC-9481-2294A",
         insuranceLocation: "Cabinet 1, Top Drawer (Yellow Folder)"
       }
     },
-    meds: {
-      "grandma": [
-        { name: "Lisinopril 10mg", schedule: "Once daily in morning", purpose: "Blood Pressure control" },
-        { name: "Metformin 500mg", schedule: "Twice daily with meals", purpose: "Diabetes management" },
-        { name: "Aspirin 81mg", schedule: "Once daily in morning", purpose: "Cardio blood-thinner" }
+
+    medications: {
+      grandma: [
+        { name: "Metformin 500mg", schedule: "Twice daily after meals", purpose: "Blood Sugar" },
+        { name: "Lisinopril 10mg", schedule: "Every morning 8:00 AM", purpose: "Blood Pressure" },
+        { name: "Aspirin 81mg", schedule: "Daily Low-Dose (Lunch)", purpose: "Cardiovascular" }
       ]
     },
 
-    async getProfile(subject) {
-      await McpSimulator.delay(400);
-      const profile = McpSimulator.medical.profiles[subject] || null;
-      McpSimulator.log("Medical MCP", "get_patient_profile", { patient: subject }, profile);
+    async getProfile(userKey) {
+      await McpSimulator.delay(250);
+      const profile = McpSimulator.medical.profiles[userKey] || null;
+      McpSimulator.log("Medical MCP", "get_emergency_profile", { subject: userKey }, profile);
       return profile;
     },
 
-    async getMedications(subject) {
-      await McpSimulator.delay(300);
-      const medications = McpSimulator.medical.meds[subject] || [];
-      McpSimulator.log("Medical MCP", "get_medication_schedule", { patient: subject }, medications);
-      return medications;
+    async getMedications(userKey) {
+      await McpSimulator.delay(250);
+      const meds = McpSimulator.medical.medications[userKey] || [];
+      McpSimulator.log("Medical MCP", "get_medication_schedule", { subject: userKey }, meds);
+      return meds;
     }
   },
 
   // ==========================================
-  // LEGACY MCP (Verified memories)
+  // LEGACY MCP (Memories, Stories, Voice, Videos)
   // ==========================================
   legacy: {
     memories: [
       {
         id: "legacy-story-01",
         subject: "Grandpa Robert",
-        title: "The 1974 Snowstorm Walkout",
-        story: "In December of 1974, we got hit by 30 inches of snow in less than 24 hours. The local power line collapsed, and we were freezing in the old cabin. I decided to walk 4 miles through the blizzard to retrieve kerosene for the heater and milk for your father who was just a toddler. It was so cold my eyelashes froze shut. But when I got back and fired up that heater, the room warmed up, and your grandma made us hot cocoa. It taught me that a family can get through any storm if they work together.",
-        recordedDate: "2023-10-12",
+        title: "Grandpa's 1968 Journey to the Coast",
+        story: "We took the old Chevy through the mountain pass before the new interstate was built. It took 14 hours with two flat tires, but watching the sunrise over the Pacific Ocean with your grandmother made every mile unforgettable.",
+        recordedDate: "1968-06-20",
         mediaType: "Audio Voice Clip",
-        mediaUrl: "grandpa_snowstorm_1974.wav",
-        verificationHash: "sha256-8a9d1fc5e6b772c91834ee8a58a74d2b",
+        mediaUrl: "grandpa_coast_journey.wav",
+        verificationHash: "sha256-8f432194bb8e84a29a0021c4598129a0",
         verifiable: true,
         confidenceScore: 1.00,
-        owner: "dad",
+        owner: "grandpa",
         privacyLevel: "Family",
-        photo: "https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?w=600&auto=format&fit=crop",
-        video: ""
+        photo: "https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?w=600&auto=format&fit=crop",
+        video: "hero.mp4"
       },
       {
         id: "legacy-story-02",
-        subject: "Grandpa Robert",
-        title: "Grandpa's Advice on Compound Interest",
-        story: "Don't look at investments as a lottery. Look at them as planting an oak tree. In 1980, I started putting just twenty dollars a month into a standard S&P fund. It felt like nothing, but over forty years, that seed grew into the college fund that paid for Arthur and Sarah's university. Start early, stay steady, and don't panic when the market takes a dip. Time is your greatest asset.",
-        recordedDate: "2021-06-15",
+        subject: "Grandma Elena",
+        title: "Summer Cottage & Hand-whipped Lemon Tart",
+        story: "Every August when the lemons ripened on the back patio, we would gather the whole family to whip the meringue by hand. The secret was never rushing the sugar syrup. 6 egg yolks, beaten until golden and thick.",
+        recordedDate: "1984-08-15",
         mediaType: "Audio Voice Clip",
-        mediaUrl: "grandpa_compound_interest.wav",
-        verificationHash: "sha256-42ee9bcf9143a18a994775d04581f109",
+        mediaUrl: "grandma_lemon_tart.wav",
+        verificationHash: "sha256-91e8432187f592aa12b48900142cba91",
         verifiable: true,
         confidenceScore: 1.00,
-        owner: "dad",
+        owner: "grandma",
         privacyLevel: "Family",
-        photo: "",
+        photo: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop",
         video: ""
       },
       {
         id: "legacy-story-03",
         subject: "Grandma Elena",
-        title: "Grandma's Wedding Secret",
-        story: "On the night of our wedding in 1968, Robert lost the rings. We spent 2 hours looking for them in the bushes behind the chapel. We ended up using two blades of woven grass as rings. It was the most romantic mistake of my life.",
-        recordedDate: "2024-02-14",
+        title: "Grandma's Wedding Ring Secret",
+        story: "On the night of our wedding in 1968, Robert lost the rings. We spent 2 hours looking in the bushes behind the chapel. We ended up using two blades of woven grass. It was the most romantic mistake of my life.",
+        recordedDate: "1968-09-12",
         mediaType: "Audio Voice Clip",
         mediaUrl: "grandma_wedding_rings.wav",
         verificationHash: "sha256-42bbde9c8d11629faee155d045c2f90a",
@@ -223,9 +249,9 @@ const McpSimulator = {
       {
         id: "legacy-story-04",
         subject: "Dad Arthur",
-        title: "Dad's First Car Adventure",
-        story: "I bought a broken down 1985 Ford truck for two hundred dollars. Robert and I spent three months rebuilding the transmission. When we finally got it running, the exhaust pipe fell off on my first drive to school. The noise was deafening, but it was the proudest day of my teens.",
-        recordedDate: "2025-05-10",
+        title: "Dad's First Truck & Transmissions",
+        story: "I bought a broken down 1985 Ford truck for two hundred dollars. Robert and I spent three months rebuilding the transmission in the garage. When we finally got it running, it was the proudest day of my teenage years.",
+        recordedDate: "1996-05-10",
         mediaType: "Audio Voice Clip",
         mediaUrl: "dad_first_truck.wav",
         verificationHash: "sha256-55aa88fc9143a18a994775d04581f109",
@@ -233,16 +259,18 @@ const McpSimulator = {
         confidenceScore: 1.00,
         owner: "dad",
         privacyLevel: "Restricted",
-        photo: "",
-        video: "video_truck.mp4"
+        photo: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop",
+        video: "neuralyn_bg.mp4"
       }
     ],
 
     async searchStories(query) {
-      await McpSimulator.delay(400);
+      await McpSimulator.delay(300);
+      const q = query.toLowerCase();
       const matches = McpSimulator.legacy.memories.filter(story => 
-        story.title.toLowerCase().includes(query.toLowerCase()) || 
-        story.story.toLowerCase().includes(query.toLowerCase())
+        story.title.toLowerCase().includes(q) || 
+        story.story.toLowerCase().includes(q) ||
+        story.subject.toLowerCase().includes(q)
       );
       McpSimulator.log("Legacy MCP", "get_verified_voice_recordings", { keyword: query }, matches);
       return matches;
@@ -261,8 +289,7 @@ const McpSimulator = {
     tasks: [],
 
     async getEvents() {
-      await McpSimulator.delay(250);
-      McpSimulator.log("Calendar MCP", "list_upcoming_events", {}, McpSimulator.calendar.events);
+      await McpSimulator.delay(200);
       return McpSimulator.calendar.events;
     },
 
@@ -275,7 +302,6 @@ const McpSimulator = {
         ...task
       };
       McpSimulator.calendar.tasks.push(newTask);
-      McpSimulator.log("Calendar MCP", "create_calendar_task", task, { status: "Created", taskId: newTask.id });
       return newTask;
     },
 
