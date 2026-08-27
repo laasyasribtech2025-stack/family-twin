@@ -26,118 +26,123 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 1. LUMORA HERO LANDING & VIDEO CONTROLLER
+// 1. MAINFRAME HERO LANDING & MOUSE SCRUB CONTROLLER
 // ==========================================
-let activeVideoIndex = 0;
-let isVideoTransitioning = false;
-
 function initHeroLanding() {
   const heroPage = document.getElementById('hero-landing-page');
   const appContainer = document.getElementById('app-container');
-  const heroCenterBox = document.getElementById('hero-center-box');
-  const heroSwitcherBtns = document.querySelectorAll('#hero-video-switcher .vid-tab-btn');
-  const dashPickerDots = document.querySelectorAll('#dashboard-video-picker .dash-theme-dot');
-  const heroVideos = document.querySelectorAll('#hero-video-stack .video-layer-item');
-  const dashVideos = document.querySelectorAll('#dashboard-video-stack .dashboard-vid-item');
-  const mobileMenuBtn = document.getElementById('btn-mobile-menu-toggle');
-  const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-  const emailForm = document.getElementById('hero-email-form');
+  const video = document.getElementById('mainframe-video');
+  const typewriterOutput = document.getElementById('typewriter-output');
+  const typewriterCursor = document.getElementById('typewriter-cursor');
+  const actionPills = document.getElementById('action-pills-container');
+  const hamburgerBtn = document.getElementById('btn-mainframe-hamburger');
+  const mobileOverlay = document.getElementById('mainframe-mobile-overlay');
+  const copyBtn = document.getElementById('btn-copy-email');
+  const copyToast = document.getElementById('copy-toast');
 
-  function switchActiveVideo(index) {
-    if (index === activeVideoIndex || isVideoTransitioning) return;
-    isVideoTransitioning = true;
-    activeVideoIndex = index;
+  // --- Background Video Mouse-Scrub Controlled ---
+  if (video) {
+    let prevX = null;
+    let targetTime = 0;
+    let isSeeking = false;
+    const SENSITIVITY = 0.8;
 
-    // Update Hero Stack
-    heroVideos.forEach((vid, idx) => {
-      vid.classList.toggle('active', idx === index);
-    });
-
-    // Update Dashboard Stack
-    dashVideos.forEach((vid, idx) => {
-      vid.classList.toggle('active', idx === index);
-    });
-
-    // Update Hero Tab Buttons
-    heroSwitcherBtns.forEach((btn, idx) => {
-      btn.classList.toggle('active', idx === index);
-    });
-
-    // Update Dashboard Picker Dots
-    dashPickerDots.forEach((dot, idx) => {
-      dot.classList.toggle('active', idx === index);
-    });
-
-    // Dark Mode Transition for "Deep Woods" (3rd video, index 2) -> #182C41
-    if (heroCenterBox) {
-      if (index === 2) {
-        heroCenterBox.classList.add('deep-woods-mode');
-      } else {
-        heroCenterBox.classList.remove('deep-woods-mode');
+    video.addEventListener('seeked', () => {
+      isSeeking = false;
+      if (Math.abs(video.currentTime - targetTime) > 0.04) {
+        isSeeking = true;
+        video.currentTime = targetTime;
       }
-    }
+    });
 
-    // 1000ms cooldown matching the crossfade duration
-    setTimeout(() => {
-      isVideoTransitioning = false;
-    }, 1000);
+    window.addEventListener('mousemove', (e) => {
+      if (prevX === null) {
+        prevX = e.clientX;
+        return;
+      }
+      const delta = e.clientX - prevX;
+      prevX = e.clientX;
+
+      if (!video.duration || isNaN(video.duration)) return;
+
+      const timeOffset = (delta / window.innerWidth) * SENSITIVITY * video.duration;
+      targetTime = Math.max(0, Math.min(video.duration, (targetTime || video.currentTime) + timeOffset));
+
+      if (!isSeeking) {
+        isSeeking = true;
+        video.currentTime = targetTime;
+      }
+    });
   }
 
-  // Hero Video Switcher Click Events
-  heroSwitcherBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  // --- Typewriter Text Animation ---
+  const typewriterText = "Glad you stopped in. Good taste tends to find us. Now, what are we building?";
+  const typeSpeed = 38; // ms per char
+  const startDelay = 600; // ms
+
+  if (typewriterOutput) {
+    typewriterOutput.textContent = "";
+    setTimeout(() => {
+      let charIndex = 0;
+      const typeInterval = setInterval(() => {
+        if (charIndex < typewriterText.length) {
+          typewriterOutput.textContent += typewriterText.charAt(charIndex);
+          charIndex++;
+        } else {
+          clearInterval(typeInterval);
+          if (typewriterCursor) typewriterCursor.style.display = 'none';
+        }
+      }, typeSpeed);
+    }, startDelay);
+  }
+
+  // --- Action Pill Buttons Appearance ---
+  setTimeout(() => {
+    if (actionPills) actionPills.classList.add('visible');
+  }, 400);
+
+  // --- Copy Email to Clipboard ---
+  if (copyBtn) {
+    copyBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const idx = parseInt(btn.getAttribute('data-index'), 10);
-      switchActiveVideo(idx);
+      const email = "hello@mainframe.co";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email);
+      }
+      if (copyToast) {
+        copyToast.classList.remove('hidden');
+        setTimeout(() => {
+          copyToast.classList.add('hidden');
+        }, 2200);
+      }
     });
-  });
+  }
 
-  // Dashboard Video Theme Dots Click Events
-  dashPickerDots.forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      e.preventDefault();
-      const idx = parseInt(dot.getAttribute('data-index'), 10);
-      switchActiveVideo(idx);
-    });
-  });
-
-  // Mobile Menu Toggle
-  if (mobileMenuBtn && mobileMenuOverlay) {
-    mobileMenuBtn.addEventListener('click', () => {
-      const isOpen = mobileMenuBtn.classList.toggle('mobile-menu-active');
-      mobileMenuOverlay.classList.toggle('hidden', !isOpen);
-      if (window.lucide) window.lucide.createIcons();
+  // --- Mobile Hamburger Navigation ---
+  if (hamburgerBtn && mobileOverlay) {
+    hamburgerBtn.addEventListener('click', () => {
+      const isOpen = hamburgerBtn.classList.toggle('open');
+      mobileOverlay.classList.toggle('hidden', !isOpen);
     });
 
-    // Close on link click
-    mobileMenuOverlay.querySelectorAll('.mobile-nav-link').forEach(link => {
+    mobileOverlay.querySelectorAll('.mobile-item').forEach(link => {
       link.addEventListener('click', () => {
-        mobileMenuBtn.classList.remove('mobile-menu-active');
-        mobileMenuOverlay.classList.add('hidden');
+        hamburgerBtn.classList.remove('open');
+        mobileOverlay.classList.add('hidden');
       });
     });
   }
 
-  // Email Early Access Form
-  if (emailForm) {
-    emailForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = document.getElementById('hero-email-input');
-      const emailVal = input ? input.value : '';
-      alert(`✨ Welcome to Lumora! Early access link sent to: ${emailVal || 'your email'}`);
-      enterVault();
-    });
-  }
-
+  // --- Vault Navigation Transitions ---
   function enterVault() {
     if (heroPage && appContainer) {
       heroPage.classList.add('hidden');
       appContainer.classList.remove('hidden');
-      if (mobileMenuOverlay) mobileMenuOverlay.classList.add('hidden');
-      if (mobileMenuBtn) mobileMenuBtn.classList.remove('mobile-menu-active');
+      if (mobileOverlay) mobileOverlay.classList.add('hidden');
+      if (hamburgerBtn) hamburgerBtn.classList.remove('open');
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Start ambient audio automatically on user entry
+      // Start ambient music automatically on user entry
       if (window.startAmbientMusic) window.startAmbientMusic();
     }
   }
@@ -150,11 +155,27 @@ function initHeroLanding() {
     }
   }
 
+  // Action Pills & Buttons that transition to Vault / Dashboard
   document.getElementById('btn-capsule-enter')?.addEventListener('click', enterVault);
   document.getElementById('btn-mobile-get-started')?.addEventListener('click', enterVault);
+  document.getElementById('btn-enter-vault-action')?.addEventListener('click', enterVault);
+  document.getElementById('btn-hero-enter-vault-link')?.addEventListener('click', enterVault);
+  document.getElementById('btn-mainframe-touch')?.addEventListener('click', enterVault);
+
+  document.querySelectorAll('.pill-btn-white').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.getAttribute('data-action');
+      if (action === 'operate') {
+        enterVault();
+      } else {
+        enterVault();
+      }
+    });
+  });
+
   document.getElementById('btn-return-landing')?.addEventListener('click', returnToHero);
   document.getElementById('sidebar-logo-brand')?.addEventListener('click', returnToHero);
-  document.getElementById('lumora-logo-brand')?.addEventListener('click', () => {
+  document.getElementById('mainframe-logo-brand')?.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }

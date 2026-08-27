@@ -1,279 +1,279 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 
-interface VideoOption {
-  label: string;
-  url: string;
+// Custom Typewriter Hook
+function useTypewriter(text: string, speed = 38, startDelay = 600) {
+  const [displayed, setDisplayed] = useState('');
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    let index = 0;
+
+    const delayTimer = setTimeout(() => {
+      timer = setInterval(() => {
+        if (index < text.length) {
+          setDisplayed(text.slice(0, index + 1));
+          index++;
+        } else {
+          setDone(true);
+          clearInterval(timer);
+        }
+      }, speed);
+    }, startDelay);
+
+    return () => {
+      clearTimeout(delayTimer);
+      clearInterval(timer);
+    };
+  }, [text, speed, startDelay]);
+
+  return { displayed, done };
 }
 
-const VIDEOS: VideoOption[] = [
-  {
-    label: 'Golden Hour',
-    url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260702_081127_0992a171-d3c6-4978-8213-0ec5df8b6d63.mp4'
-  },
-  {
-    label: 'Still Water',
-    url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260702_092026_dd05b805-ea0f-40b2-8c52-332b88502592.mp4'
-  },
-  {
-    label: 'Deep Woods',
-    url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260702_081042_df7202bf-bd80-4b2b-bbc6-1f09ba2870e9.mp4'
-  },
-  {
-    label: 'Quiet Dawn',
-    url: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260702_080959_4cac5234-3573-464e-a5b7-76b94b8a7d61.mp4'
-  }
-];
-
 export default function App() {
-  const [activeVideo, setActiveVideo] = useState<number>(0);
-  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const targetTimeRef = useRef<number>(0);
+  const isSeekingRef = useRef<boolean>(false);
+  const prevXRef = useRef<number | null>(null);
 
-  // Deep woods dark text mode (index 2)
-  const isDeepWoods = activeVideo === 2;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pillsVisible, setPillsVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const handleVideoSwitch = (index: number) => {
-    if (index === activeVideo || isTransitioning) return;
-    setIsTransitioning(true);
-    setActiveVideo(index);
+  const typewriterText =
+    "Glad you stopped in. Good taste tends to find us. Now, what are we building?";
+  const { displayed, done } = useTypewriter(typewriterText, 38, 600);
+
+  // Show action pills 400ms after mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPillsVisible(true);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Horizontal mouse-scrub video logic
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const SENSITIVITY = 0.8;
+
+    const handleSeeked = () => {
+      isSeekingRef.current = false;
+      if (Math.abs(video.currentTime - targetTimeRef.current) > 0.04) {
+        isSeekingRef.current = true;
+        video.currentTime = targetTimeRef.current;
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (prevXRef.current === null) {
+        prevXRef.current = e.clientX;
+        return;
+      }
+      const delta = e.clientX - prevXRef.current;
+      prevXRef.current = e.clientX;
+
+      if (!video.duration || isNaN(video.duration)) return;
+
+      const timeOffset = (delta / window.innerWidth) * SENSITIVITY * video.duration;
+      targetTimeRef.current = Math.max(
+        0,
+        Math.min(video.duration, (targetTimeRef.current || video.currentTime) + timeOffset)
+      );
+
+      if (!isSeekingRef.current) {
+        isSeekingRef.current = true;
+        video.currentTime = targetTimeRef.current;
+      }
+    };
+
+    video.addEventListener('seeked', handleSeeked);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      video.removeEventListener('seeked', handleSeeked);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('hello@mainframe.co');
+    setToastMessage('Copied hello@mainframe.co to clipboard!');
     setTimeout(() => {
-      setIsTransitioning(false);
-    }, 1000);
+      setToastMessage(null);
+    }, 2200);
   };
 
-  const navLinks = ['How It Works', 'Features', 'Pricing', 'Community'];
-  const stats = [
-    '60+ Deep Sessions',
-    '12,000+ Creators',
-    '4.8 User Satisfaction',
-    'Intentional-First Design'
-  ];
+  const navLinks = ['Labs', 'Studio', 'Openings', 'Shop'];
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black flex flex-col font-serif select-none">
+    <div className="relative w-full h-screen overflow-hidden bg-black text-white font-body select-none">
       
-      {/* 1. Background Video Layer (Stack of 4 absolute videos) */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-        {VIDEOS.map((video, idx) => (
-          <video
-            key={video.label}
-            src={video.url}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-              activeVideo === idx ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* 2. Transparent PNG Overlay with continuous Train-Bob Animation (z-index 1) */}
-      <img
-        src="https://soft-zoom-63098134.figma.site/_assets/v11/0b4a435b2df2747593c43d7a1c9b4578f7d8d90c.png"
-        alt="Atmospheric Overlay"
-        className="train-bob-overlay"
+      {/* Background Video (Mouse-Scrub Controlled) */}
+      <video
+        ref={videoRef}
+        muted
+        playsInline
+        preload="auto"
+        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4"
+        className="fixed inset-0 w-full h-full object-cover object-[70%_center] pointer-events-none z-0"
       />
 
-      {/* 3. Content Layer (z-index 2) */}
-      <div className="relative z-10 flex flex-col justify-between h-full w-full px-6 py-6 sm:px-12 sm:py-8 max-w-7xl mx-auto pointer-events-auto">
-        
-        {/* Navigation */}
-        <header className="w-full flex items-center justify-between">
-          {/* Logo (Instrument Serif, italic, white) */}
-          <div className="text-white italic text-2xl sm:text-3xl tracking-wide cursor-pointer">
-            Lumora
-          </div>
+      {/* Navbar (fixed, z-index: 10) */}
+      <header className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-5 sm:px-8 py-4 sm:py-5">
+        {/* Logo (left) */}
+        <div className="flex items-center gap-3 cursor-pointer">
+          <span className="font-heading text-[21px] sm:text-[26px] tracking-tight text-white font-medium">
+            Mainframe&reg;
+          </span>
+          <span className="text-[25px] sm:text-[30px] text-white tracking-[-0.02em] select-none leading-none">
+            &#10035;
+          </span>
+        </div>
 
-          {/* Desktop Nav Pill (md+) */}
-          <nav className="hidden md:flex items-center gap-6 liquid-glass px-6 py-2 rounded-full font-sans">
-            {navLinks.map((link) => (
+        {/* Desktop Nav Links (center, hidden below md) */}
+        <nav className="hidden md:flex items-center text-[23px] text-white">
+          {navLinks.map((link, idx) => (
+            <React.Fragment key={link}>
               <a
-                key={link}
-                href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}
-                className="text-white/90 hover:text-white text-sm transition-colors duration-200"
+                href={`#${link.toLowerCase()}`}
+                className="hover:opacity-60 transition-opacity duration-200"
               >
                 {link}
               </a>
-            ))}
-            <button
-              onClick={() => {
-                const app = document.getElementById('app-container');
-                const hero = document.getElementById('hero-landing-page');
-                if (app && hero) {
-                  hero.classList.add('hidden');
-                  app.classList.remove('hidden');
-                }
-              }}
-              className="bg-white text-black text-sm font-medium px-4 py-1.5 rounded-full hover:bg-white/90 transition-transform active:scale-95 shadow-sm"
-            >
-              Get Started
-            </button>
-          </nav>
+              {idx < navLinks.length - 1 && <span className="mr-1.5">, </span>}
+            </React.Fragment>
+          ))}
+        </nav>
 
-          {/* Mobile Hamburger Button */}
-          <div className="flex md:hidden items-center gap-3">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="liquid-glass w-11 h-11 rounded-full flex items-center justify-center text-white relative z-50 focus:outline-none"
-              aria-label="Toggle menu"
-            >
-              <div className="relative w-6 h-6 flex items-center justify-center">
-                <Menu
-                  className={`w-6 h-6 absolute transition-all duration-300 transform ${
-                    mobileMenuOpen
-                      ? 'rotate-90 scale-75 opacity-0 pointer-events-none'
-                      : 'rotate-0 scale-100 opacity-100'
-                  }`}
-                />
-                <X
-                  className={`w-6 h-6 absolute transition-all duration-300 transform ${
-                    mobileMenuOpen
-                      ? 'rotate-0 scale-100 opacity-100'
-                      : '-rotate-90 scale-75 opacity-0 pointer-events-none'
-                  }`}
-                />
-              </div>
-            </button>
-          </div>
-        </header>
+        {/* Desktop CTA (right, hidden below md) */}
+        <div className="hidden md:flex items-center gap-4">
+          <a
+            href="#contact"
+            className="text-[23px] text-white underline underline-offset-2 hover:opacity-60 transition-opacity duration-200"
+          >
+            Get in touch
+          </a>
+        </div>
 
-        {/* Mobile Menu Overlay */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center p-8 transition-opacity duration-500 font-sans">
-            <div className="flex flex-col items-center gap-8 w-full max-w-sm text-center">
-              {navLinks.map((link, i) => (
-                <a
-                  key={link}
-                  href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-white text-3xl font-light tracking-wide transform translate-y-0 transition-all duration-500 hover:text-amber-200"
-                  style={{
-                    animationDelay: `${100 + i * 50}ms`,
-                    animationDuration: '500ms',
-                    animationTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  {link}
-                </a>
-              ))}
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  const app = document.getElementById('app-container');
-                  const hero = document.getElementById('hero-landing-page');
-                  if (app && hero) {
-                    hero.classList.add('hidden');
-                    app.classList.remove('hidden');
-                  }
-                }}
-                className="w-full bg-white text-black font-semibold text-lg py-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 mt-4"
-              >
-                Get Started
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Mobile Hamburger (visible below md) */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="flex md:hidden flex-col justify-center gap-[5px] w-6 h-6 z-20 focus:outline-none"
+          aria-label="Toggle navigation"
+        >
+          <span
+            className={`w-6 h-[2px] bg-white transition-transform duration-300 ${
+              mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
+            }`}
+          />
+          <span
+            className={`w-6 h-[2px] bg-white transition-opacity duration-300 ${
+              mobileMenuOpen ? 'opacity-0' : 'opacity-100'
+            }`}
+          />
+          <span
+            className={`w-6 h-[2px] bg-white transition-transform duration-300 ${
+              mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
+            }`}
+          />
+        </button>
+      </header>
 
-        {/* Hero Content (Centered) */}
-        <main className="flex flex-col items-center text-center my-auto px-4 max-w-4xl mx-auto w-full">
+      {/* Mobile Overlay (z-index: 9) */}
+      <div
+        className={`fixed inset-0 z-[9] bg-black/90 backdrop-blur-md flex flex-col justify-center px-8 gap-8 transition-opacity duration-300 md:hidden ${
+          mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        {navLinks.map((link) => (
+          <a
+            key={link}
+            href={`#${link.toLowerCase()}`}
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-[32px] font-medium text-white hover:opacity-60"
+          >
+            {link}
+          </a>
+        ))}
+        <a
+          href="#contact"
+          onClick={() => setMobileMenuOpen(false)}
+          className="text-[32px] font-medium text-white underline underline-offset-4 hover:opacity-60"
+        >
+          Get in touch
+        </a>
+      </div>
+
+      {/* Hero Section (z-index: 1) */}
+      <main className="relative z-[1] flex flex-col justify-end pb-12 md:justify-center md:pb-0 h-screen px-5 sm:px-8 md:px-10 overflow-hidden">
+        <div className="max-w-xl">
           
-          {/* Badge */}
-          <div
-            className={`liquid-glass rounded-full px-5 py-1.5 mb-6 text-xs sm:text-sm font-sans tracking-wide transition-colors duration-700 ${
-              isDeepWoods ? 'text-[#182C41]' : 'text-white/90'
-            }`}
-          >
-            Over 10,000 minds already finding their clarity
+          {/* 1. Blurred Intro Label */}
+          <div className="pointer-events-none select-none mb-5 sm:mb-6 text-[clamp(18px,4vw,26px)] leading-[1.3] font-normal text-white blur-[4px]">
+            Hey there, meet A.R.I.A,<br />
+            Mainframe's Adaptive Response Interface Agent
           </div>
 
-          {/* Heading (Instrument Serif) */}
-          <h1
-            className={`text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] leading-[1.1] font-normal transition-colors duration-700 tracking-tight ${
-              isDeepWoods ? 'text-[#182C41]' : 'text-white'
-            }`}
-          >
-            Clarity in an Endlessly<br />Noisy Universe
-          </h1>
-
-          {/* Subtext (System UI) */}
-          <p
-            className={`mt-6 text-sm sm:text-base md:text-lg font-sans max-w-xl leading-relaxed transition-colors duration-700 ${
-              isDeepWoods ? 'text-[#182C41]/80' : 'text-white/80'
-            }`}
-          >
-            Rise above the chaos of pings, infinite scrolling, and relentless demands.
-            Discover how to protect your presence and create with intention.
+          {/* 2. Typewriter Text */}
+          <p className="text-white mb-5 sm:mb-6 text-[clamp(18px,4vw,26px)] leading-[1.35] font-normal min-h-[54px]">
+            {displayed}
+            {!done && (
+              <span className="inline-block w-[2px] h-[1.1em] bg-white align-middle ml-[2px] animate-pulse" />
+            )}
           </p>
 
-          {/* Email Input Form */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert(`Welcome to Lumora! Access granted for: ${email}`);
-            }}
-            className="mt-8 w-full max-w-[320px] sm:max-w-md liquid-glass p-1.5 rounded-full flex items-center gap-2 font-sans transition-all duration-700"
+          {/* 3. Action Pill Buttons */}
+          <div
+            className={`flex flex-wrap gap-y-1 transition-all duration-400 ${
+              pillsVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-2 pointer-events-none'
+            }`}
           >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Your Best Email"
-              required
-              className={`flex-1 bg-transparent px-4 py-2 text-sm focus:outline-none placeholder-white/50 transition-colors duration-700 ${
-                isDeepWoods ? 'text-[#182C41] placeholder-[#182C41]/50' : 'text-white'
-              }`}
-            />
+            {['Pitch us an idea', 'Come work here', 'Send a brief hello', 'See how we operate'].map(
+              (label) => (
+                <button
+                  key={label}
+                  className="inline-flex items-center justify-center bg-white text-black border border-black/10 rounded-full text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-black hover:text-white transition-colors duration-200"
+                >
+                  {label}
+                </button>
+              )
+            )}
+
             <button
-              type="submit"
-              className="bg-white text-black text-xs sm:text-sm font-medium px-5 py-2.5 rounded-full hover:bg-white/90 active:scale-95 transition-all shadow"
+              onClick={handleCopyEmail}
+              className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-transparent text-white border border-white rounded-full text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-white hover:text-black transition-colors duration-200"
             >
-              Get Early Access
-            </button>
-          </form>
-
-          {/* Video Switcher Bar */}
-          <div className="flex items-center gap-2 sm:gap-4 mt-8 font-sans">
-            {VIDEOS.map((vid, idx) => (
-              <button
-                key={vid.label}
-                onClick={() => handleVideoSwitch(idx)}
-                disabled={isTransitioning}
-                className={`text-xs sm:text-sm px-3 py-1.5 border-b-2 transition-all duration-300 ${
-                  activeVideo === idx
-                    ? isDeepWoods
-                      ? 'text-[#182C41] border-[#182C41] font-semibold opacity-100'
-                      : 'text-white border-white font-semibold opacity-100'
-                    : isDeepWoods
-                    ? 'text-[#182C41]/50 border-transparent hover:text-[#182C41]/80'
-                    : 'text-white/50 border-transparent hover:text-white/80'
-                }`}
+              <span>
+                Reach us: <span className="underline underline-offset-1">hello@mainframe.co</span>
+              </span>
+              <svg
+                className="w-3 h-3 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
               >
-                {vid.label}
-              </button>
-            ))}
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            </button>
           </div>
-        </main>
 
-        {/* Bottom Stats (Push to bottom via spacer) */}
-        <footer className="w-full flex justify-center items-center py-2 font-sans text-xs sm:text-sm text-white/70">
-          <div className="hidden sm:flex items-center gap-4 flex-wrap justify-center">
-            {stats.map((stat, i) => (
-              <React.Fragment key={stat}>
-                <span>{stat}</span>
-                {i < stats.length - 1 && <span className="opacity-40">|</span>}
-              </React.Fragment>
-            ))}
-          </div>
-          <div className="sm:hidden text-center text-xs opacity-80">
-            60+ Sessions &bull; 12k+ Creators &bull; 4.8 Rating
-          </div>
-        </footer>
+        </div>
+      </main>
 
-      </div>
-    </section>
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-5 py-2.5 rounded-full text-sm font-semibold shadow-2xl z-50 animate-fade-in">
+          {toastMessage}
+        </div>
+      )}
+
+    </div>
   );
 }
