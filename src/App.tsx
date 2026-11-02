@@ -227,6 +227,17 @@ export default function App() {
             </button>
           </div>
 
+          {/* Featured Project Video (laasyaproject.mp4) in Middle of Homepage */}
+          <div className="my-4 max-w-[460px] w-full rounded-2xl overflow-hidden border border-white/20 shadow-2xl bg-black/50 backdrop-blur-md">
+            <video
+              src="laasyaproject.mp4"
+              controls
+              playsInline
+              preload="metadata"
+              className="w-full h-auto block rounded-2xl"
+            />
+          </div>
+
         </div>
       </main>
 
