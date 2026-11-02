@@ -114,10 +114,12 @@ export default function App() {
       {/* Background Video (Mouse-Scrub Controlled) */}
       <video
         ref={videoRef}
+        autoPlay
+        loop
         muted
         playsInline
         preload="auto"
-        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4"
+        src="laasyaproject.mp4"
         className="fixed inset-0 w-full h-full object-cover object-[70%_center] pointer-events-none z-0"
       />
 
